@@ -18,7 +18,6 @@ class ReservationType extends AbstractType
                 'widget' => 'single_text',
             ])
             ->add('statut')
-            ->add('id_utilisateur')
             ->add('id_manga')
             ->add('utilisateur', EntityType::class, [
                 'class' => User::class,

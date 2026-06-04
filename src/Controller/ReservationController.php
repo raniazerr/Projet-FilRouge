@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Reservation;
-use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,67 +16,119 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ReservationController extends AbstractController
 {
     #[Route(name: 'app_reservation_index', methods: ['GET'])]
-    public function index(ReservationRepository $reservationRepository): Response
+    public function index(ReservationRepository $reservationRepository): JsonResponse
     {
-        return $this->render('reservation/index.html.twig', [
-            'reservations' => $reservationRepository->findAll(),
-        ]);
+        $reservations = array_map(
+            [$this, 'normalizeReservation'],
+            $reservationRepository->findAll()
+        );
+
+        return new JsonResponse($reservations);
     }
 
-    #[Route('/new', name: 'app_reservation_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route(name: 'app_reservation_new', methods: ['POST'])]
+    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
     {
-        $reservation = new Reservation();
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->render('reservation/new.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
+        $user = $userRepository->find($data['utilisateur'] ?? null);
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $date = new \DateTimeImmutable($data['date_reservation'] ?? '');
+        } catch (\Exception $exception) {
+            return new JsonResponse(['error' => 'Date invalide'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $reservation = new Reservation();
+        $reservation->setDateReservation($date);
+        $reservation->setStatut($data['statut'] ?? '');
+        $reservation->setIdManga((int) ($data['id_manga'] ?? 0));
+        $reservation->setUtilisateur($user);
+
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
+        return new JsonResponse($this->normalizeReservation($reservation), Response::HTTP_CREATED);
     }
 
     #[Route('/{id}', name: 'app_reservation_show', methods: ['GET'])]
-    public function show(Reservation $reservation): Response
+    public function show(?Reservation $reservation): JsonResponse
     {
-        return $this->render('reservation/show.html.twig', [
-            'reservation' => $reservation,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_reservation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        if (!$reservation) {
+            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->render('reservation/edit.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
+        return new JsonResponse($this->normalizeReservation($reservation));
     }
 
-    #[Route('/{id}', name: 'app_reservation_delete', methods: ['POST'])]
-    public function delete(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_reservation_edit', methods: ['PUT', 'PATCH'])]
+    public function edit(Request $request, ?Reservation $reservation, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
     {
-        if ($this->isCsrfTokenValid('delete'.$reservation->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($reservation);
-            $entityManager->flush();
+        if (!$reservation) {
+            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
         }
 
-        return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (isset($data['date_reservation'])) {
+            try {
+                $reservation->setDateReservation(new \DateTimeImmutable($data['date_reservation']));
+            } catch (\Exception $exception) {
+                return new JsonResponse(['error' => 'Date invalide'], Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+        if (isset($data['statut'])) {
+            $reservation->setStatut($data['statut']);
+        }
+
+        if (isset($data['id_manga'])) {
+            $reservation->setIdManga((int) $data['id_manga']);
+        }
+
+        if (isset($data['utilisateur'])) {
+            $user = $userRepository->find($data['utilisateur']);
+            if (!$user) {
+                return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
+            }
+            $reservation->setUtilisateur($user);
+        }
+
+        $entityManager->flush();
+
+        return new JsonResponse($this->normalizeReservation($reservation));
+    }
+
+    #[Route('/{id}', name: 'app_reservation_delete', methods: ['DELETE'])]
+    public function delete(?Reservation $reservation, EntityManagerInterface $entityManager): JsonResponse
+    {
+        if (!$reservation) {
+            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $entityManager->remove($reservation);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function normalizeReservation(Reservation $reservation): array
+    {
+        return [
+            'id' => $reservation->getId(),
+            'date_reservation' => $reservation->getDateReservation()?->format('Y-m-d H:i:s'),
+            'statut' => $reservation->getStatut(),
+            'id_manga' => $reservation->getIdManga(),
+            'utilisateur' => $reservation->getUtilisateur()?->getId(),
+        ];
     }
 }

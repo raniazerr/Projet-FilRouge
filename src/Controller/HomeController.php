@@ -3,14 +3,14 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
     #[Route('/')]
-    public function index(): Response
+    public function index(): JsonResponse
     {
-        return $this->render('pages/home/index.html.twig');
+        return new JsonResponse(['message' => 'API backend opérationnel']);
     }
 }

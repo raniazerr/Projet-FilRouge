@@ -21,8 +21,6 @@ class Reservation
     #[ORM\Column(length: 50)]
     private ?string $statut = null;
 
-    #[ORM\Column]
-    private ?int $id_utilisateur = null;
 
     #[ORM\Column]
     private ?int $id_manga = null;
@@ -34,7 +32,7 @@ class Reservation
     private Collection $manga;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $utilisateur = null;
 
     public function __construct()
@@ -67,18 +65,6 @@ class Reservation
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-
-        return $this;
-    }
-
-    public function getIdUtilisateur(): ?int
-    {
-        return $this->id_utilisateur;
-    }
-
-    public function setIdUtilisateur(int $id_utilisateur): static
-    {
-        $this->id_utilisateur = $id_utilisateur;
 
         return $this;
     }
