@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/manga')]
 final class MangaController extends AbstractController
@@ -18,11 +19,11 @@ final class MangaController extends AbstractController
     public function index(MangaRepository $mangaRepository): JsonResponse
     {
         $mangas = array_map([$this, 'normalizeManga'], $mangaRepository->findAll());
-
         return new JsonResponse($mangas);
     }
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -38,6 +39,8 @@ final class MangaController extends AbstractController
         $manga->setApiId((int) $data['api_id']);
         $manga->setTitre((string) $data['titre']);
         $manga->setImage((string) $data['image']);
+        $manga->setStock((int) ($data['stock'] ?? 0));      
+        $manga->setPrix((float) ($data['prix'] ?? 0.0));    
 
         $entityManager->persist($manga);
         $entityManager->flush();
@@ -51,11 +54,11 @@ final class MangaController extends AbstractController
         if (!$manga) {
             return new JsonResponse(['error' => 'Manga not found'], Response::HTTP_NOT_FOUND);
         }
-
         return new JsonResponse($this->normalizeManga($manga));
     }
 
     #[Route('/{id}/edit', name: 'app_manga_edit', methods: ['PUT', 'PATCH'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {
@@ -67,15 +70,11 @@ final class MangaController extends AbstractController
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($data['api_id'])) {
-            $manga->setApiId((int) $data['api_id']);
-        }
-        if (isset($data['titre'])) {
-            $manga->setTitre((string) $data['titre']);
-        }
-        if (isset($data['image'])) {
-            $manga->setImage((string) $data['image']);
-        }
+        if (isset($data['api_id']))  $manga->setApiId((int) $data['api_id']);
+        if (isset($data['titre']))   $manga->setTitre((string) $data['titre']);
+        if (isset($data['image']))   $manga->setImage((string) $data['image']);
+        if (isset($data['stock']))   $manga->setStock((int) $data['stock']);      
+        if (isset($data['prix']))    $manga->setPrix((float) $data['prix']);      
 
         $entityManager->flush();
 
@@ -83,6 +82,7 @@ final class MangaController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_manga_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {
@@ -98,10 +98,12 @@ final class MangaController extends AbstractController
     private function normalizeManga(Manga $manga): array
     {
         return [
-            'id' => $manga->getId(),
+            'id'     => $manga->getId(),
             'api_id' => $manga->getApiId(),
-            'titre' => $manga->getTitre(),
-            'image' => $manga->getImage(),
+            'titre'  => $manga->getTitre(),
+            'image'  => $manga->getImage(),
+            'stock'  => $manga->getStock(),   
+            'prix'   => $manga->getPrix(),    
         ];
     }
 }

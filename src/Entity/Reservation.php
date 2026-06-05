@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ReservationRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -19,26 +17,15 @@ class Reservation
     private ?\DateTimeImmutable $date_reservation = null;
 
     #[ORM\Column(length: 50)]
-    private ?string $statut = null;
+    private ?string $statut = 'active';
 
-
-    #[ORM\Column]
-    private ?int $id_manga = null;
-
-    /**
-     * @var Collection<int, Manga>
-     */
-    #[ORM\OneToMany(targetEntity: Manga::class, mappedBy: 'reservation')]
-    private Collection $manga;
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Tome $tome = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $utilisateur = null;
-
-    public function __construct()
-    {
-        $this->manga = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -53,7 +40,6 @@ class Reservation
     public function setDateReservation(\DateTimeImmutable $date_reservation): static
     {
         $this->date_reservation = $date_reservation;
-
         return $this;
     }
 
@@ -65,49 +51,17 @@ class Reservation
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-
         return $this;
     }
 
-    public function getIdManga(): ?int
+    public function getTome(): ?Tome
     {
-        return $this->id_manga;
+        return $this->tome;
     }
 
-    public function setIdManga(int $id_manga): static
+    public function setTome(?Tome $tome): static
     {
-        $this->id_manga = $id_manga;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Manga>
-     */
-    public function getManga(): Collection
-    {
-        return $this->manga;
-    }
-
-    public function addManga(Manga $manga): static
-    {
-        if (!$this->manga->contains($manga)) {
-            $this->manga->add($manga);
-            $manga->setReservation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeManga(Manga $manga): static
-    {
-        if ($this->manga->removeElement($manga)) {
-            // set the owning side to null (unless already changed)
-            if ($manga->getReservation() === $this) {
-                $manga->setReservation(null);
-            }
-        }
-
+        $this->tome = $tome;
         return $this;
     }
 
@@ -119,7 +73,6 @@ class Reservation
     public function setUtilisateur(?User $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
-
         return $this;
     }
 }
