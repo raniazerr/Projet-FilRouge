@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Manga;
 use App\Repository\MangaRepository;
+use App\Service\MangaApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +24,7 @@ final class MangaController extends AbstractController
     }
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
-    #[IsGranted('ROLE_ADMIN')]
+    // #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -38,9 +39,7 @@ final class MangaController extends AbstractController
         $manga = new Manga();
         $manga->setApiId((int) $data['api_id']);
         $manga->setTitre((string) $data['titre']);
-        $manga->setImage((string) $data['image']);
-        $manga->setStock((int) ($data['stock'] ?? 0));      
-        $manga->setPrix((float) ($data['prix'] ?? 0.0));    
+        $manga->setImage((string) $data['image']);   
 
         $entityManager->persist($manga);
         $entityManager->flush();
@@ -48,17 +47,42 @@ final class MangaController extends AbstractController
         return new JsonResponse($this->normalizeManga($manga), Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
-    public function show(?Manga $manga): JsonResponse
-    {
-        if (!$manga) {
-            return new JsonResponse(['error' => 'Manga not found'], Response::HTTP_NOT_FOUND);
-        }
-        return new JsonResponse($this->normalizeManga($manga));
+   #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
+public function show(
+    ?Manga $manga,
+    MangaApiService $api
+): JsonResponse {
+    if (!$manga) {
+        return new JsonResponse(['error' => 'Manga not found'], 404);
     }
 
+    $apiData = $api->getManga($manga->getApiId());
+
+    // Récupère les tomes et leur stock
+    $tomes = array_map(function($tome) {
+        return [
+            'id'          => $tome->getId(),
+            'numero_tome' => $tome->getNumeroTome(),
+            'stock'       => $tome->getStock(),
+            'prix'        => $tome->getPrix(),
+        ];
+    }, $manga->getTomes()->toArray());
+
+    return new JsonResponse([
+        'id'          => $manga->getId(),
+        'api_id'      => $manga->getApiId(),
+        'titre'       => $apiData['data']['title'] ?? $manga->getTitre(),
+        'description' => $apiData['data']['synopsis'] ?? null,
+        'image'       => $apiData['data']['images']['jpg']['image_url'] ?? $manga->getImage(),
+        'auteurs'     => array_map(fn($a) => $a['name'], $apiData['data']['authors'] ?? []),
+        'volumes'     => $apiData['data']['volumes'] ?? null,
+        'statut'      => $apiData['data']['status'] ?? null,
+        'tomes'       => $tomes, // ← liste des tomes en stock
+    ]);
+}
+
     #[Route('/{id}/edit', name: 'app_manga_edit', methods: ['PUT', 'PATCH'])]
-    #[IsGranted('ROLE_ADMIN')]
+    // #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {
@@ -72,9 +96,7 @@ final class MangaController extends AbstractController
 
         if (isset($data['api_id']))  $manga->setApiId((int) $data['api_id']);
         if (isset($data['titre']))   $manga->setTitre((string) $data['titre']);
-        if (isset($data['image']))   $manga->setImage((string) $data['image']);
-        if (isset($data['stock']))   $manga->setStock((int) $data['stock']);      
-        if (isset($data['prix']))    $manga->setPrix((float) $data['prix']);      
+        if (isset($data['image']))   $manga->setImage((string) $data['image']);     
 
         $entityManager->flush();
 
@@ -82,7 +104,7 @@ final class MangaController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_manga_delete', methods: ['DELETE'])]
-    #[IsGranted('ROLE_ADMIN')]
+    // #[IsGranted('ROLE_ADMIN')]
     public function delete(?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {
@@ -101,9 +123,7 @@ final class MangaController extends AbstractController
             'id'     => $manga->getId(),
             'api_id' => $manga->getApiId(),
             'titre'  => $manga->getTitre(),
-            'image'  => $manga->getImage(),
-            'stock'  => $manga->getStock(),   
-            'prix'   => $manga->getPrix(),    
+            'image'  => $manga->getImage(), 
         ];
     }
 }

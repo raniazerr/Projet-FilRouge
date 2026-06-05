@@ -22,8 +22,8 @@ class RegistrationController extends AbstractController
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (empty($data['email'] ?? '') || empty($data['plainPassword'] ?? '') || empty($data['nom'] ?? '') || empty($data['prenom'] ?? '')) {
-            return new JsonResponse(['error' => 'Les champs email, plainPassword, nom et prenom sont requis'], Response::HTTP_BAD_REQUEST);
+        if (empty($data['email'] ?? '') || empty($data['password'] ?? '') || empty($data['nom'] ?? '') || empty($data['prenom'] ?? '')) {
+            return new JsonResponse(['error' => 'Les champs email, password, nom et prenom sont requis'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($userRepository->findOneBy(['email' => $data['email']])) {
@@ -32,7 +32,7 @@ class RegistrationController extends AbstractController
 
         $user = new User();
         $user->setEmail($data['email']);
-        $user->setPassword($userPasswordHasher->hashPassword($user, $data['plainPassword']));
+        $user->setPassword($userPasswordHasher->hashPassword($user, $data['password']));
         $user->setNom($data['nom']);
         $user->setPrenom($data['prenom']);
         $user->setDateInscription(new \DateTimeImmutable());
