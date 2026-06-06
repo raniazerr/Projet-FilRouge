@@ -8,13 +8,15 @@
     <span class="search-icon">🔍</span>
   </div>
 
-  <div class="navbar__actions">
-    <a class="navbar__panier" routerLink="/panier">
-      🛒 Mon panier
-      <span class="panier-badge" *ngIf="panierCount > 0">{{ panierCount }}</span>
-    </a>
-    <a class="navbar__compte" routerLink="/login">
-      👤 Mon compte
-    </a>
-  </div>
-</header>
+    <div class="navbar__actions">
+        <a class="navbar__panier" routerLink="/panier">
+        <span class="icon">🛒</span>
+        <span class="label">Mon panier</span>
+        <span class="panier-badge" *ngIf="panierCount > 0">{{ panierCount }}</span>
+        </a>
+        <a routerLink="/login">
+        <span class="icon">👤</span>
+        <span class="label">Mon compte</span>
+        </a>
+    </div>
+    </header>
