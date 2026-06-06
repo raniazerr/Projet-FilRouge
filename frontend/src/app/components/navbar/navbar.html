@@ -1,0 +1,20 @@
+<header class="navbar">
+  <div class="navbar__logo">
+    <span class="logo-text">MANGA RAKE</span>
+  </div>
+
+  <div class="navbar__search">
+    <input type="text" placeholder="Rechercher..." [(ngModel)]="searchQuery" />
+    <span class="search-icon">🔍</span>
+  </div>
+
+  <div class="navbar__actions">
+    <a class="navbar__panier" routerLink="/panier">
+      🛒 Mon panier
+      <span class="panier-badge" *ngIf="panierCount > 0">{{ panierCount }}</span>
+    </a>
+    <a class="navbar__compte" routerLink="/login">
+      👤 Mon compte
+    </a>
+  </div>
+</header>
