@@ -25,28 +25,26 @@ final class MangaController extends AbstractController
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
     // #[IsGranted('ROLE_ADMIN')]
-    public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
-        if (!is_array($data)) {
-            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
-        }
+    public function create( Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse {
+    $data = json_decode($request->getContent(), true);
 
-        if (empty($data['api_id'] ?? null) || empty($data['titre'] ?? '') || !isset($data['image'])) {
-            return new JsonResponse(['error' => 'Les champs api_id, titre et image sont requis'], Response::HTTP_BAD_REQUEST);
-        }
-
-        $manga = new Manga();
-        $manga->setApiId((int) $data['api_id']);
-        $manga->setTitre((string) $data['titre']);
-        $manga->setImage((string) $data['image']); 
-        $manga->setSynopsis($api->getSynopsis((int) $data['api_id']));  
-
-        $entityManager->persist($manga);
-        $entityManager->flush();
-
-        return new JsonResponse($this->normalizeManga($manga), Response::HTTP_CREATED);
+    if (!isset($data['api_id'])) {
+        return new JsonResponse(['error' => 'api_id required'], 400);
     }
+
+    $apiData = $api->getManga((int)$data['api_id'])['data'];
+
+    $manga = new Manga();
+    $manga->setApiId($apiData['mal_id']);
+    $manga->setTitre($apiData['title']);
+    $manga->setImage($apiData['images']['jpg']['image_url']);
+    $manga->setSynopsis($apiData['synopsis']);
+
+    $entityManager->persist($manga);
+    $entityManager->flush();
+
+    return new JsonResponse($this->normalizeManga($manga), 201);
+}
 
    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
 public function show(
