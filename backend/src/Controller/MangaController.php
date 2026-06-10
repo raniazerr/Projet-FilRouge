@@ -39,7 +39,8 @@ final class MangaController extends AbstractController
         $manga = new Manga();
         $manga->setApiId((int) $data['api_id']);
         $manga->setTitre((string) $data['titre']);
-        $manga->setImage((string) $data['image']);   
+        $manga->setImage((string) $data['image']); 
+        $manga->setSynopsis($api->getSynopsis((int) $data['api_id']));  
 
         $entityManager->persist($manga);
         $entityManager->flush();
@@ -123,7 +124,8 @@ public function show(
             'id'     => $manga->getId(),
             'api_id' => $manga->getApiId(),
             'titre'  => $manga->getTitre(),
-            'image'  => $manga->getImage(), 
+            'image'  => $manga->getImage(),
+            'synopsis' => $manga->getSynopsis(), 
         ];
     }
 }

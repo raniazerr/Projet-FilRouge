@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\MangaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: MangaRepository::class)]
@@ -35,6 +36,9 @@ class Manga
      */
     #[ORM\OneToMany(targetEntity: Favori::class, mappedBy: 'manga')]
     private Collection $favoris;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $synopsis = null;
 
     public function __construct()
     {
@@ -92,6 +96,18 @@ class Manga
                 $favori->setManga(null);
             }
         }
+        return $this;
+    }
+
+    public function getSynopsis(): ?string
+    {
+        return $this->synopsis;
+    }
+
+    public function setSynopsis(?string $synopsis): static
+    {
+        $this->synopsis = $synopsis;
+
         return $this;
     }
 }

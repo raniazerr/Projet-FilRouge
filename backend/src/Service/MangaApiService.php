@@ -10,6 +10,12 @@ class MangaApiService
         private HttpClientInterface $client
     ) {}
 
+    public function getSynopsis(int $apiId): ?string
+    {
+    $data = $this->getManga($apiId);
+    return $data['data']['synopsis'] ?? null;
+    }
+
     public function getManga(int $id): array
     {
         $response = $this->client->request(
