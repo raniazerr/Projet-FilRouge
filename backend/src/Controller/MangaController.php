@@ -25,7 +25,7 @@ final class MangaController extends AbstractController
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
     // #[IsGranted('ROLE_ADMIN')]
-    public function create(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         if (!is_array($data)) {

@@ -13,16 +13,19 @@
 
   <!-- Top 3 -->
   <div class="home__top3">
-    <div class="top3__header">
-      <span class="top3__icon">🔥</span>
-      <span class="top3__titre">Les plus populaires</span>
-    </div>
+  <div class="top3__header">
+    <span class="top3__icon">🔥</span>
+    <span class="top3__titre">Les plus populaires</span>
+  </div>
+  <div class="top3__carousel">
+    <button class="top3__arrow top3__arrow--prev" (click)="prevSlide()" *ngIf="peutPrev">❮</button>
     <div class="top3__liste">
-      <div class="top3__item" *ngFor="let manga of mangas.slice(0, 3); let i = index">
+      <div class="top3__item" *ngFor="let manga of mangas.slice(0, 3); let i = index"
+           [class.active]="i === slideActif">
         <img [src]="manga.image" [alt]="manga.titre" />
         <div class="top3__info">
           <span class="top3__nom">
-          <span class="top3__rang">#{{ i + 1 }}</span>
+            <span class="top3__rang">#{{ i + 1 }}</span>
             {{ manga.titre }}
           </span>
           <span class="top3__synopsis">{{ manga.synopsis }}</span>
@@ -30,7 +33,9 @@
         </div>
       </div>
     </div>
+    <button class="top3__arrow top3__arrow--next" (click)="nextSlide()" *ngIf="peutNext">❯</button>
   </div>
+</div>
 
   <!-- Grille mangas -->
   <div class="home__grille">

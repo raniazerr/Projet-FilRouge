@@ -12,9 +12,9 @@ import { ServManga, Manga } from '../../services/MangaService';
 export class HomeComponent implements OnInit {
 
   mangas: Manga[] = [];
-  top3: any[] = [];
   chargement = true;
   erreur = false;
+  slideActif = 0;
 
   constructor(private mangaService: ServManga) {}
 
@@ -29,5 +29,21 @@ export class HomeComponent implements OnInit {
         this.chargement = false;
       }
     });
+  }
+
+  prevSlide(): void {
+    this.slideActif = this.slideActif === 0 ? 2 : this.slideActif - 1;
+  }
+
+  nextSlide(): void {
+    this.slideActif = this.slideActif === 2 ? 0 : this.slideActif + 1;
+  }
+
+  get peutPrev(): boolean {
+    return this.slideActif > 0;
+  }
+
+  get peutNext(): boolean {
+    return this.slideActif < 2;
   }
 }

@@ -81,6 +81,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .top3__synopsis {
@@ -98,6 +103,66 @@
   align-self: flex-start;
   font-size: 12px;
   padding: 6px 14px;
+}
+
+// ===== RESPONSIVITE =====
+
+.top3__carousel {
+  display: flex;
+  align-items: center;
+}
+
+.top3__arrow {
+  display: none;
+  background: var(--rouge-principal);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0 8px;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+
+@media (max-width: 768px) {
+  .top3__arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .top3__liste {
+    flex-direction: row;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .top3__item {
+    display: none;
+    width: 100%;
+    border-right: none;
+    animation: slideIn 0.3s ease;
+
+    &.active {
+      display: flex;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
 }
 
 // ===== GRILLE =====
