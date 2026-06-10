@@ -40,6 +40,9 @@ class Manga
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $synopsis = null;
 
+    #[ORM\Column]
+    private array $genres = [];
+
     public function __construct()
     {
         $this->tomes = new ArrayCollection();
@@ -107,6 +110,18 @@ class Manga
     public function setSynopsis(?string $synopsis): static
     {
         $this->synopsis = $synopsis;
+
+        return $this;
+    }
+
+    public function getGenres(): array
+    {
+        return $this->genres;
+    }
+
+    public function setGenres(array $genres): static
+    {
+        $this->genres = $genres;
 
         return $this;
     }

@@ -27,6 +27,10 @@ final class MangaController extends AbstractController
     // #[IsGranted('ROLE_ADMIN')]
     public function create( Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse {
     $data = json_decode($request->getContent(), true);
+    // $response = $api->getManga((int)$data['api_id']);
+    // var_dump($response);
+    // die();
+
 
     if (!isset($data['api_id'])) {
         return new JsonResponse(['error' => 'api_id required'], 400);
@@ -39,6 +43,7 @@ final class MangaController extends AbstractController
     $manga->setTitre($apiData['title']);
     $manga->setImage($apiData['images']['jpg']['image_url']);
     $manga->setSynopsis($apiData['synopsis']);
+    $manga->setGenres(array_map(fn($g) => $g['name'], $apiData['genres'] ?? []));
 
     $entityManager->persist($manga);
     $entityManager->flush();
@@ -124,6 +129,7 @@ public function show(
             'titre'  => $manga->getTitre(),
             'image'  => $manga->getImage(),
             'synopsis' => $manga->getSynopsis(), 
+            'genres' => $manga->getGenres() ?? [],
         ];
     }
 }

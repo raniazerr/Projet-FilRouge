@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ServManga, Manga } from '../../services/MangaService';
-import { ChangeDetectorRef } from '@angular/core'; //force angular à détecter les changements après la requête asynchrone (mets trop de temps à charger)
+import { ChangeDetectorRef } from '@angular/core'; //mécanisme Angular qui force la mise à jour de l'affichage. (mets trop de temps à charger)
 
 @Component({
   selector: 'app-home',

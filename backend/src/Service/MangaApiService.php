@@ -10,11 +10,11 @@ class MangaApiService
         private HttpClientInterface $client
     ) {}
 
-    // public function getSynopsis(int $apiId): ?string
-    // {
-    // $data = $this->getManga($apiId);
-    // return $data['data']['synopsis'] ?? null;
-    // }
+    public function getGenres(int $apiId): array
+    {
+        $data = $this->getManga($apiId);
+        return array_map(fn($g) => $g['name'], $data['data']['genres'] ?? []);
+    }
 
     public function getManga(int $id): array
     {
