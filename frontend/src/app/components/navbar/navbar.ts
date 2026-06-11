@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-navbar',
@@ -13,4 +14,6 @@ import { FormsModule } from '@angular/forms';
 export class NavbarComponent {
   searchQuery = '';
   panierCount = 0;
+
+  constructor(public authService: AuthService) {}
 }

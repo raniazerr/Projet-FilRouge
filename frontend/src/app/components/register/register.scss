@@ -1,0 +1,129 @@
+.auth-page {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  background: #f5f5f5;
+}
+
+.auth {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 24px 40px;
+
+  &__card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__titre {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    text-align: center;
+  }
+
+  &__erreur {
+    background: #fce4ec;
+    color: #c62828;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__champ {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    input {
+      padding: 10px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1a1a1a;
+      transition: border-color 0.15s;
+      outline: none;
+
+      &:focus {
+        border-color: #e63312;
+      }
+
+      &::placeholder {
+        color: #aaa;
+      }
+    }
+  }
+
+  &__btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 4px;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__lien {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin: 0;
+
+    a {
+      color: #e63312;
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+  // Bouton retour
+.login__retour {
+  padding: 24px 24px 0;
+  align-self: flex-start;
+}
+.btn-retour {
+  background: white;
+  border: 2px solid #e63312;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e63312;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e63312;
+    color: white;
+  }
+}

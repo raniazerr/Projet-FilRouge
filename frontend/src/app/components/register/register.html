@@ -1,1 +1,44 @@
-<p>register works!</p>
+<div class="auth-page">
+
+    <!-- Bouton retour -->
+<div class="login__retour">
+  <button class="btn-retour" routerLink="/">
+    🠔 Retour
+  </button>
+</div>
+<div class="auth">
+  <div class="auth__card">
+    <h1 class="auth__titre">Créer un compte</h1>
+
+    <div class="auth__erreur" *ngIf="erreur">{{ erreur }}</div>
+
+    <div class="auth__champ">
+      <label>Prénom</label>
+      <input type="text" [(ngModel)]="prenom" placeholder="Ton prénom" />
+    </div>
+
+    <div class="auth__champ">
+      <label>Nom</label>
+      <input type="text" [(ngModel)]="nom" placeholder="Ton nom" />
+    </div>
+
+    <div class="auth__champ">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="email" placeholder="ton@email.com" />
+    </div>
+
+    <div class="auth__champ">
+      <label>Mot de passe</label>
+      <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+    </div>
+
+    <button class="btn-primary auth__btn" (click)="inscrire()" [disabled]="chargement">
+      {{ chargement ? 'Inscription...' : "S'inscrire" }}
+    </button>
+
+    <p class="auth__lien">
+      Déjà un compte ? <a routerLink="/login">Se connecter</a>
+    </p>
+  </div>
+</div>
+</div>
