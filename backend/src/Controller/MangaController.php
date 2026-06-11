@@ -16,16 +16,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/manga')]
 final class MangaController extends AbstractController
 {
-    #[Route('/index', name: 'app_manga_index', methods: ['GET'])]
-    public function index(MangaRepository $mangaRepository): JsonResponse
-    {
-        $mangas = array_map([$this, 'normalizeManga'], $mangaRepository->findAll());
-        return new JsonResponse($mangas);
-    }
+   #[Route('/index', name: 'app_manga_index', methods: ['GET'])]
+public function index(MangaRepository $mangaRepository): JsonResponse
+{
+    $mangas = array_map([$this, 'normalizeManga'], $mangaRepository->findAll());
+    $topMangas = array_map([$this, 'normalizeManga'], $mangaRepository->findMostReserved(3));
+    return new JsonResponse(['mangas' => $mangas, 'top' => $topMangas]);
+}
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
     // #[IsGranted('ROLE_ADMIN')]
-    public function create( Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse {
+    public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse 
+    {
     $data = json_decode($request->getContent(), true);
     // $response = $api->getManga((int)$data['api_id']);
     // var_dump($response);

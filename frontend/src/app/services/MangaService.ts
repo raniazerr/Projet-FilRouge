@@ -8,6 +8,12 @@ export interface Manga {
   titre: string;
   image: string;
   synopsis?: string;
+  genres?: string[];
+}
+
+export interface MangaResponse {
+  mangas: Manga[];
+  top: Manga[];
 }
 
 @Injectable({
@@ -18,8 +24,7 @@ export class ServManga {
 
   constructor(private http: HttpClient) {}
 
-  getMangas(): Observable<Manga[]> {
-    return this.http.get<Manga[]>(`${this.apiUrl}/manga/index`);
+  getMangas(): Observable<MangaResponse> {
+    return this.http.get<MangaResponse>(`${this.apiUrl}/manga/index`);
   }
-
 }

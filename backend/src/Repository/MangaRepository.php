@@ -15,6 +15,19 @@ class MangaRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Manga::class);
     }
+    
+    public function findMostReserved(int $limit = 3): array
+    {
+        return $this->createQueryBuilder('m')
+            ->leftJoin('m.tomes', 't')
+            ->leftJoin('t.reservations', 'r')
+            ->addSelect('COUNT(r.id) as HIDDEN reservationCount')
+            ->groupBy('m.id')
+            ->orderBy('reservationCount', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 
     //    /**
     //     * @return Manga[] Returns an array of Manga objects

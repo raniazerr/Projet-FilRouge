@@ -29,7 +29,7 @@
     input {
       width: 100%;
       padding: 8px 16px 8px 40px;
-      border-radius: 20px;
+      border-radius: 10px;
       border: none;
       font-size: 14px;
       outline: none;
@@ -107,15 +107,17 @@
     height: 70px;
 
     &__logo .logo-text {
-      font-size: 18px;
+      font-size: 16px;
+      letter-spacing: 1px;
     }
 
     &__search {
-      flex: 0 1 180px;
+      flex: 0 1 240px;
+      margin-right: 24px;
     }
 
     &__actions {
-      gap: 16px;
+      gap: 10px;
 
       .label {
         display: none;
@@ -135,7 +137,7 @@
     padding: 0 12px;
 
     &__search {
-      flex: 0 1 130px;
+      flex: 0 1 180px;
     }
   }
 }

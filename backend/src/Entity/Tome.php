@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\TomeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: TomeRepository::class)]
 class Tome
@@ -27,6 +29,15 @@ class Tome
     #[ORM\JoinColumn(nullable: false)]
     private ?Manga $manga = null;
 
+    #[ORM\OneToMany(mappedBy: 'tome', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
+    // Initialise $reservations comme collection vide à la création de l'objet
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -40,7 +51,6 @@ class Tome
     public function setNumeroTome(int $numero_tome): static
     {
         $this->numero_tome = $numero_tome;
-
         return $this;
     }
 
@@ -52,7 +62,6 @@ class Tome
     public function setStock(int $stock): static
     {
         $this->stock = $stock;
-
         return $this;
     }
 
@@ -75,7 +84,11 @@ class Tome
     public function setManga(?Manga $manga): static
     {
         $this->manga = $manga;
-
         return $this;
+    }
+
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
     }
 }
