@@ -68,6 +68,11 @@ export class MangaDetailComponent implements OnInit {
     });
   }
 
+  getTomeById(event: Event): Tome {
+  const id = +(event.target as HTMLSelectElement).value;
+  return this.manga!.tomes.find(t => t.id === id)!;
+}
+
   selectionnerTome(tome: Tome): void {
     this.tomeSelectionne = tome;
   }

@@ -41,20 +41,24 @@
       <span class="detail__meta-valeur">{{ manga.statut }}</span>
     </div>
 
-    <!-- Sélecteur de tome -->
-    <div class="detail__tomes" *ngIf="manga.tomes.length > 0">
-      <label class="detail__tomes-label">Tome</label>
-      <div class="detail__tomes-liste">
-        <button
-          *ngFor="let tome of manga.tomes"
-          class="tome-btn"
-          [class.actif]="tomeSelectionne?.id === tome.id"
-          [class.rupture]="tome.stock === 0"
-          (click)="selectionnerTome(tome)">
-          {{ tome.numero_tome }}
-        </button>
-      </div>
-    </div>
+<!-- Sélecteur de tome -->
+<div class="detail__tomes" *ngIf="manga.tomes.length > 0">
+  <label class="detail__tomes-label" for="tome-select">Tome</label>
+  <select
+    id="tome-select"
+    class="tome-select"
+    (change)="selectionnerTome(getTomeById($event))"
+  >
+    <option value="" disabled selected>Sélectionner...</option>
+    <option
+      *ngFor="let tome of manga.tomes"
+      [value]="tome.id"
+      [disabled]="tome.stock === 0"
+    >
+      Tome {{ tome.numero_tome }}{{ tome.stock === 0 ? ' — Rupture' : '' }}
+    </option>
+  </select>
+</div>
 
     <!-- Description -->
     <div class="detail__description" *ngIf="manga.description">

@@ -144,34 +144,27 @@
   }
 }
 
-// Bouton tome
-.tome-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 6px;
+// Select tome
+.tome-select {
+  width: 25%;
+  text-overflow: clip;
+  padding: 0.6rem 2rem 0.6rem 1rem;
   border: 2px solid var(--gris-secondaire);
-  background: white;
-  font-size: 13px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
   color: var(--text-dark);
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s;
 
-  &:hover {
+  &:focus {
+    outline: none;
     border-color: var(--rouge-principal);
-    color: var(--rouge-principal);
   }
 
-  &.actif {
-    background: var(--rouge-principal);
-    border-color: var(--rouge-principal);
-    color: white;
-  }
-
-  &.rupture {
-    opacity: 0.35;
-    cursor: not-allowed;
-    text-decoration: line-through;
+  option:disabled {
+    color: #aaa;
   }
 }
 
