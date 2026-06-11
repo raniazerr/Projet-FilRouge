@@ -1,0 +1,34 @@
+<div class="auth-page">
+<!-- Bouton retour -->
+<div class="login__retour">
+  <button class="btn-retour" routerLink="/">
+    🠔 Retour
+  </button>
+</div>
+
+<div class="auth">
+  <div class="auth__card">
+    <h1 class="auth__titre">Connexion</h1>
+
+    <div class="auth__erreur" *ngIf="erreur">{{ erreur }}</div>
+
+    <div class="auth__champ">
+      <label>Email</label>
+      <input type="email" [(ngModel)]="email" placeholder="ton@email.com" />
+    </div>
+
+    <div class="auth__champ">
+      <label>Mot de passe</label>
+      <input type="password" [(ngModel)]="password" placeholder="••••••••" />
+    </div>
+
+    <button class="btn-primary auth__btn" (click)="connexion()" [disabled]="chargement">
+      {{ chargement ? 'Connexion...' : 'Se connecter' }}
+    </button>
+
+    <p class="auth__lien">
+      Pas encore de compte ? <a routerLink="/inscription">S'inscrire</a>
+    </p>
+  </div>
+</div>
+</div>
