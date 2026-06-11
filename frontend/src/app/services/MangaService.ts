@@ -27,4 +27,8 @@ export class ServManga {
   getMangas(): Observable<MangaResponse> {
     return this.http.get<MangaResponse>(`${this.apiUrl}/manga/index`);
   }
+
+  getMangaById(id: number): Observable<any> {
+  return this.http.get(`${this.apiUrl}/manga/${id}`);
+}
 }

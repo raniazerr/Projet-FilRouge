@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ServManga, Manga } from '../../services/MangaService';
 import { ChangeDetectorRef } from '@angular/core'; // Mécanisme Angular qui force la mise à jour de l'affichage.
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })

@@ -1,13 +1,3 @@
-<!-- Chargement -->
-<div class="home__loading" *ngIf="chargement">
-  <p>Chargement des mangas...</p>
-</div>
-
-<!-- Erreur -->
-<div class="home__vide" *ngIf="erreur">
-  <p>Impossible de charger les mangas.</p>
-</div>
-
 <!-- Contenu principal -->
 <div class="home">
 
@@ -58,7 +48,7 @@
 </div>
 
   <!-- Top 3 -->
-  <div class="home__top3">
+  <div class="home__top3" *ngIf="!chargement">
   <div class="top3__header">
     <span class="top3__icon">🔥</span>
     <span class="top3__titre">Les plus populaires</span>
@@ -75,7 +65,7 @@
             {{ manga.titre }}
           </span>
           <span class="top3__synopsis">{{ manga.synopsis }}</span>
-          <button class="btn-primary">Voir plus</button>
+          <button class="btn-primary" [routerLink]="['/manga', manga.id]">Voir plus</button>
         </div>
       </div>
     </div>
@@ -83,9 +73,20 @@
   </div>
 </div>
 
+
+<!-- Chargement -->
+<div class="home__loading" *ngIf="chargement">
+  <p>Chargement des mangas...</p>
+</div>
+
+<!-- Erreur -->
+<div class="home__vide" *ngIf="mangas.length === 0 && !chargement && !erreur">
+  <p>Aucun manga trouvé.</p>
+</div>
+
   <!-- Grille mangas -->
   <div class="home__grille">
-    <div class="manga-card" *ngFor="let manga of mangasFiltres">
+    <div class="manga-card" *ngFor="let manga of mangasFiltres" [routerLink]="['/manga', manga.id]">
       <div class="manga-card__image-wrapper">
         <img [src]="manga.image" [alt]="manga.titre" />
         <div class="manga-card__overlay">
@@ -100,10 +101,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Aucun manga -->
-  <div class="home__vide" *ngIf="mangas.length === 0">
-    <p>Aucun manga trouvé.</p>
-  </div>
-
 </div>

@@ -1,0 +1,74 @@
+<!-- Bouton retour -->
+<div class="detail__retour">
+  <button class="btn-retour" routerLink="/">
+    🠔 Retour
+  </button>
+</div>
+
+<!-- Chargement -->
+<div class="detail__loading" *ngIf="chargement">
+  <p>Chargement...</p>
+</div>
+
+<!-- Erreur -->
+<div class="detail__erreur" *ngIf="erreur">
+  <p>Impossible de charger ce manga.</p>
+</div>
+
+<!-- Contenu -->
+<div class="detail" *ngIf="manga && !chargement">
+
+  <div class="detail__image">
+    <img [src]="manga.image" [alt]="manga.titre" />
+  </div>
+
+  <div class="detail__infos">
+
+    <div class="detail__header">
+      <h1 class="detail__titre">{{ manga.titre }}</h1>
+      <span class="detail__badge" [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
+        {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
+      </span>
+    </div>
+
+    <div class="detail__meta" *ngIf="manga.auteurs.length > 0">
+      <span class="detail__meta-label">Auteur{{ manga.auteurs.length > 1 ? 's' : '' }}</span>
+      <span class="detail__meta-valeur">{{ manga.auteurs.join(', ') }}</span>
+    </div>
+
+    <div class="detail__meta" *ngIf="manga.statut">
+      <span class="detail__meta-label">Statut</span>
+      <span class="detail__meta-valeur">{{ manga.statut }}</span>
+    </div>
+
+    <!-- Sélecteur de tome -->
+    <div class="detail__tomes" *ngIf="manga.tomes.length > 0">
+      <label class="detail__tomes-label">Tome</label>
+      <div class="detail__tomes-liste">
+        <button
+          *ngFor="let tome of manga.tomes"
+          class="tome-btn"
+          [class.actif]="tomeSelectionne?.id === tome.id"
+          [class.rupture]="tome.stock === 0"
+          (click)="selectionnerTome(tome)">
+          {{ tome.numero_tome }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="detail__description" *ngIf="manga.description">
+      <p class="detail__description-label">Description</p>
+      <p class="detail__description-texte">{{ manga.description }}</p>
+    </div>
+
+    <!-- Prix + Réserver -->
+    <div class="detail__actions" *ngIf="tomeSelectionne">
+      <span class="detail__prix">{{ tomeSelectionne.prix | number:'1.2-2' }} €</span>
+      <button class="btn-primary detail__btn" [disabled]="!estEnStock">
+        🛒 Réserver
+      </button>
+    </div>
+
+  </div>
+</div>
