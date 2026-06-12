@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -18,7 +18,11 @@ export class LoginComponent {
   erreur = '';
   chargement = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   connexion(): void {
     this.erreur = '';
@@ -26,11 +30,13 @@ export class LoginComponent {
 
     this.authService.login(this.email, this.password).subscribe({
       next: () => {
+        this.chargement = false;
         this.router.navigate(['/']);
       },
       error: () => {
         this.erreur = 'Email ou mot de passe incorrect.';
         this.chargement = false;
+        this.cdr.detectChanges();
       }
     });
   }

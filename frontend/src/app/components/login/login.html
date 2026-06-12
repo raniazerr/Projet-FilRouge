@@ -10,7 +10,9 @@
   <div class="auth__card">
     <h1 class="auth__titre">Connexion</h1>
 
-    <div class="auth__erreur" *ngIf="erreur">{{ erreur }}</div>
+    <div class="auth__erreur" *ngIf="erreur">
+        ⚠️ {{ erreur }}
+    </div>
 
     <div class="auth__champ">
       <label>Email</label>
@@ -29,6 +31,7 @@
     <p class="auth__lien">
       Pas encore de compte ? <a routerLink="/register">S'inscrire</a>
     </p>
+
   </div>
 </div>
 </div>

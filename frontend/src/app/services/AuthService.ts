@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private apiUrl = 'http://localhost:8000/api';
+  private connecteSubject = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
+  connecte$ = this.connecteSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -17,12 +19,14 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, { email, password }).pipe(
       tap((res: any) => {
         localStorage.setItem('token', res.token);
+        this.connecteSubject.next(true);
       })
     );
   }
 
   logout(): void {
     localStorage.removeItem('token');
+    this.connecteSubject.next(false);
   }
 
   getToken(): string | null {
@@ -30,6 +34,6 @@ export class AuthService {
   }
 
   isConnecte(): boolean {
-    return !!this.getToken();
+    return this.connecteSubject.value;
   }
 }

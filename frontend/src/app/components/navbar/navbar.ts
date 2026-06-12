@@ -14,6 +14,9 @@ import { AuthService } from '../../services/AuthService';
 export class NavbarComponent {
   searchQuery = '';
   panierCount = 0;
+  connecte$;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) {
+    this.connecte$ = this.authService.connecte$;
+  }
 }
