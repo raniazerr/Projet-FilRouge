@@ -201,6 +201,19 @@
   }
 }
 
+// Messages de succès ou d'erreur 
+.detail__message-succes {
+  color: #2e7d32;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.detail__message-erreur {
+  color: #c62828;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 // Tablette
 @media (max-width: 1024px) {
   .detail {

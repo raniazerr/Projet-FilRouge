@@ -26,9 +26,10 @@
 
     <div class="detail__header">
       <h1 class="detail__titre">{{ manga.titre }}</h1>
-      <span class="detail__badge" [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
-        {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
-      </span>
+      <span class="detail__badge" *ngIf="tomeSelectionne"
+      [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
+      {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
+    </span>
     </div>
 
     <div class="detail__meta" *ngIf="manga.auteurs.length > 0">
@@ -69,10 +70,14 @@
     <!-- Prix + Réserver -->
     <div class="detail__actions" *ngIf="tomeSelectionne">
       <span class="detail__prix">{{ tomeSelectionne.prix | number:'1.2-2' }} €</span>
-      <button class="btn-primary detail__btn" [disabled]="!estEnStock">
+      <button class="btn-primary detail__btn" [disabled]="!estEnStock" (click)="ajouterAuPanier()">
         🛒 Réserver
       </button>
     </div>
+
+    <!-- Messages -->
+  <div class="detail__message-succes" *ngIf="messageSuccess">✓ {{ messageSuccess }}</div>
+  <div class="detail__message-erreur" *ngIf="messageErreur">⚠️ {{ messageErreur }}</div>
 
   </div>
 </div>

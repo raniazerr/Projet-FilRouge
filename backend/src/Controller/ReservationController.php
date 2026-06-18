@@ -4,131 +4,130 @@ namespace App\Controller;
 
 use App\Entity\Reservation;
 use App\Repository\ReservationRepository;
-use App\Repository\UserRepository;
+use App\Repository\TomeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/reservation')]
-final class ReservationController extends AbstractController
+#[Route('/api/reservations')]
+class ReservationController extends AbstractController
 {
-    #[Route(name: 'app_reservation_index', methods: ['GET'])]
-    public function index(ReservationRepository $reservationRepository): JsonResponse
+    // GET /api/reservations — voir son panier
+    #[Route('', methods: ['GET'])]
+    public function index(ReservationRepository $repo): JsonResponse
     {
-        $reservations = array_map(
-            [$this, 'normalizeReservation'],
-            $reservationRepository->findAll()
-        );
+        $user = $this->getUser();
+        $reservations = $repo->findBy(['utilisateur' => $user]);
 
-        return new JsonResponse($reservations);
+        return new JsonResponse(array_map([$this, 'normalize'], $reservations));
     }
 
-    #[Route(name: 'app_reservation_new', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
+    // POST /api/reservations — ajouter au panier
+    #[Route('', methods: ['POST'])]
+    public function create(Request $request, TomeRepository $tomeRepo, EntityManagerInterface $em): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-        if (!is_array($data)) {
-            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
+
+        $tome = $tomeRepo->find($data['tome_id'] ?? null);
+        if (!$tome) {
+            return new JsonResponse(['error' => 'Tome introuvable'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $userRepository->find($data['utilisateur'] ?? null);
-        if (!$user) {
-            return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
-        }
-
-        try {
-            $date = new \DateTimeImmutable($data['date_reservation'] ?? '');
-        } catch (\Exception $exception) {
-            return new JsonResponse(['error' => 'Date invalide'], Response::HTTP_BAD_REQUEST);
+        if ($tome->getStock() <= 0) {
+            return new JsonResponse(['error' => 'Tome en rupture de stock'], Response::HTTP_BAD_REQUEST);
         }
 
         $reservation = new Reservation();
-        $reservation->setDateReservation($date);
-        $reservation->setStatut($data['statut'] ?? '');
-        $reservation->setIdManga((int) ($data['id_manga'] ?? 0));
-        $reservation->setUtilisateur($user);
+        $reservation->setTome($tome);
+        $reservation->setUtilisateur($this->getUser());
+        $reservation->setDateReservation(new \DateTimeImmutable());
+        $reservation->setStatut('active');
 
-        $entityManager->persist($reservation);
-        $entityManager->flush();
+        $em->persist($reservation);
+        $em->flush();
 
-        return new JsonResponse($this->normalizeReservation($reservation), Response::HTTP_CREATED);
+        return new JsonResponse($this->normalize($reservation), Response::HTTP_CREATED);
     }
 
-    #[Route('/{id}', name: 'app_reservation_show', methods: ['GET'])]
-    public function show(?Reservation $reservation): JsonResponse
+    // DELETE /api/reservations/{id} — supprimer
+    #[Route('/{id}', methods: ['DELETE'])]
+    public function delete(Reservation $reservation, EntityManagerInterface $em): JsonResponse
     {
-        if (!$reservation) {
-            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
+        if ($reservation->getUtilisateur() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'Accès refusé'], Response::HTTP_FORBIDDEN);
         }
 
-        return new JsonResponse($this->normalizeReservation($reservation));
-    }
-
-    #[Route('/{id}', name: 'app_reservation_edit', methods: ['PUT', 'PATCH'])]
-    public function edit(Request $request, ?Reservation $reservation, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
-    {
-        if (!$reservation) {
-            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $data = json_decode($request->getContent(), true);
-        if (!is_array($data)) {
-            return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if (isset($data['date_reservation'])) {
-            try {
-                $reservation->setDateReservation(new \DateTimeImmutable($data['date_reservation']));
-            } catch (\Exception $exception) {
-                return new JsonResponse(['error' => 'Date invalide'], Response::HTTP_BAD_REQUEST);
-            }
-        }
-
-        if (isset($data['statut'])) {
-            $reservation->setStatut($data['statut']);
-        }
-
-        if (isset($data['id_manga'])) {
-            $reservation->setIdManga((int) $data['id_manga']);
-        }
-
-        if (isset($data['utilisateur'])) {
-            $user = $userRepository->find($data['utilisateur']);
-            if (!$user) {
-                return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
-            }
-            $reservation->setUtilisateur($user);
-        }
-
-        $entityManager->flush();
-
-        return new JsonResponse($this->normalizeReservation($reservation));
-    }
-
-    #[Route('/{id}', name: 'app_reservation_delete', methods: ['DELETE'])]
-    public function delete(?Reservation $reservation, EntityManagerInterface $entityManager): JsonResponse
-    {
-        if (!$reservation) {
-            return new JsonResponse(['error' => 'Reservation not found'], Response::HTTP_NOT_FOUND);
-        }
-
-        $entityManager->remove($reservation);
-        $entityManager->flush();
+        $em->remove($reservation);
+        $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    private function normalizeReservation(Reservation $reservation): array
+    // PATCH /api/reservations/{id}/valider — valider
+    #[Route('/{id}/valider', methods: ['PATCH'])]
+    public function valider(Reservation $reservation, EntityManagerInterface $em): JsonResponse
+    {
+        if ($reservation->getUtilisateur() !== $this->getUser()) {
+            return new JsonResponse(['error' => 'Accès refusé'], Response::HTTP_FORBIDDEN);
+        }
+
+        $tome = $reservation->getTome();
+        if ($tome->getStock() <= 0) {
+            return new JsonResponse(['error' => 'Tome en rupture de stock'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $tome->setStock($tome->getStock() - 1);
+        $reservation->setStatut('validée');
+        $em->flush();
+
+        return new JsonResponse($this->normalize($reservation));
+    }
+    
+    // GET /api/reservations/admin — voir toutes les réservations (admin)
+    // #[IsGranted('ROLE_ADMIN')]
+    #[Route('/admin', methods: ['GET'])]
+    public function adminIndex(ReservationRepository $repo): JsonResponse
+    {
+        $reservations = $repo->findAll();
+        return new JsonResponse(array_map([$this, 'normalize'], $reservations));
+    }
+
+    // PATCH /api/reservations/admin/{id}/statut — clôturer ou annuler (admin)
+    // #[IsGranted('ROLE_ADMIN')]
+    #[Route('/admin/{id}/statut', methods: ['PATCH'])]
+    public function adminUpdateStatut(Reservation $reservation, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        $statut = $data['statut'] ?? null;
+
+        if (!in_array($statut, ['validée', 'clôturée', 'annulée'])) {
+            return new JsonResponse(['error' => 'Statut invalide'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $reservation->setStatut($statut);
+        $em->flush();
+
+        return new JsonResponse($this->normalize($reservation));
+    }
+
+    private function normalize(Reservation $r): array
     {
         return [
-            'id' => $reservation->getId(),
-            'date_reservation' => $reservation->getDateReservation()?->format('Y-m-d H:i:s'),
-            'statut' => $reservation->getStatut(),
-            'id_manga' => $reservation->getIdManga(),
-            'utilisateur' => $reservation->getUtilisateur()?->getId(),
+            'id' => $r->getId(),
+            'statut' => $r->getStatut(),
+            'date_reservation' => $r->getDateReservation()?->format('Y-m-d H:i:s'),
+            'tome' => [
+                'id' => $r->getTome()->getId(),
+                'numero_tome' => $r->getTome()->getNumeroTome(),
+                'prix' => $r->getTome()->getPrix(),
+                'stock' => $r->getTome()->getStock(),
+                'manga_titre' => $r->getTome()->getManga()?->getTitre(),
+                'manga_image' => $r->getTome()->getManga()?->getImage(),
+            ]
         ];
     }
 }

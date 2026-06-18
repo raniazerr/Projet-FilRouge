@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ServManga } from '../../services/MangaService';
+import { PanierService } from '../../services/PanierService';
 
 export interface Tome {
   id: number;
@@ -41,6 +42,7 @@ export class MangaDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private mangaService: ServManga,
+    private panierService: PanierService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -56,7 +58,7 @@ export class MangaDetailComponent implements OnInit {
       next: (data: MangaDetail) => {
         this.manga = data;
         // Sélectionne le premier tome disponible par défaut
-        this.tomeSelectionne = data.tomes?.[0] ?? null;
+        this.tomeSelectionne = null;
         this.chargement = false;
         this.cdr.detectChanges();
       },
@@ -79,5 +81,28 @@ export class MangaDetailComponent implements OnInit {
 
   get estEnStock(): boolean {
     return (this.tomeSelectionne?.stock ?? 0) > 0;
+  }
+
+    messageSuccess = '';
+    messageErreur = '';
+
+  ajouterAuPanier(): void {
+    if (!this.tomeSelectionne) {
+      this.messageErreur = 'Veuillez sélectionner un tome.';
+      setTimeout(() => this.messageErreur = '', 3000);
+      return;
+    }
+    this.panierService.ajouterAuPanier(this.tomeSelectionne.id).subscribe({
+      next: () => {
+        this.messageSuccess = 'Tome ajouté au panier !';
+        this.cdr.detectChanges();
+        setTimeout(() => { this.messageSuccess = ''; this.cdr.detectChanges(); }, 3000);
+      },
+      error: () => {
+        this.messageErreur = 'Erreur lors de l\'ajout au panier.';
+        this.cdr.detectChanges();
+        setTimeout(() => { this.messageErreur = ''; this.cdr.detectChanges(); }, 3000);
+      }
+    });
   }
 }

@@ -1,0 +1,50 @@
+<div class="panier-page">
+  <div class="panier__retour">
+    <button class="btn-retour" routerLink="/">
+      🠔 Retour
+    </button>
+  </div>
+
+  <div class="panier">
+    <h1 class="panier__titre">Mon panier</h1>
+
+    <div class="panier__loading" *ngIf="chargement">
+      <p>Chargement...</p>
+    </div>
+
+    <div class="panier__erreur" *ngIf="erreur">
+      ⚠️ {{ erreur }}
+    </div>
+
+    <div class="panier__vide" *ngIf="!chargement && reservations.length === 0">
+      <p>Votre panier est vide.</p>
+      <a routerLink="/" class="btn-primary">Découvrir les mangas</a>
+    </div>
+
+    <div class="panier__liste" *ngIf="reservations.length > 0">
+  <div class="panier__item" *ngFor="let r of reservations">
+    <img [src]="r.tome.manga_image" [alt]="r.tome.manga_titre" class="panier__image" />
+    <div class="panier__infos">
+      <span class="panier__manga-titre">{{ r.tome.manga_titre }}</span>
+      <span class="panier__tome">Tome {{ r.tome.numero_tome }}</span>
+      <span class="panier__statut" [class]="'statut--' + r.statut">{{ r.statut }}</span>
+    </div>
+    <div class="panier__prix-bloc">
+      <span class="panier__prix">{{ r.tome.prix | number:'1.2-2' }} €</span>
+      <button class="btn-supprimer" (click)="supprimer(r.id)">
+        🗑 Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div class="panier__total">
+    <span>Total</span>
+    <span class="panier__total-prix">{{ total | number:'1.2-2' }} €</span>
+  </div>
+
+  <div class="panier__valider">
+    <button class="btn-primary panier__btn-valider" (click)="validerTout()">
+      ✓    Valider 
+    </button>
+  </div>
+</div>
