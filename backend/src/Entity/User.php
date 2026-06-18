@@ -57,10 +57,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Favori::class, mappedBy: 'utilisateur')]
     private Collection $favoris;
 
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur', orphanRemoval: true)]
+    private Collection $commandes;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,9 +134,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
-     */
     public function __serialize(): array
     {
         $data = (array) $this;
@@ -201,7 +205,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeReservation(Reservation $reservation): static
     {
         if ($this->reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
             if ($reservation->getUtilisateur() === $this) {
                 $reservation->setUtilisateur(null);
             }
@@ -231,9 +234,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeFavori(Favori $favori): static
     {
         if ($this->favoris->removeElement($favori)) {
-            // set the owning side to null (unless already changed)
             if ($favori->getUtilisateur() === $this) {
                 $favori->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commande>
+     */
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
+    }
+
+    public function addCommande(Commande $commande): static
+    {
+        if (!$this->commandes->contains($commande)) {
+            $this->commandes->add($commande);
+            $commande->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommande(Commande $commande): static
+    {
+        if ($this->commandes->removeElement($commande)) {
+            if ($commande->getUtilisateur() === $this) {
+                $commande->setUtilisateur(null);
             }
         }
 

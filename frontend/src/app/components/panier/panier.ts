@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { PanierService, ReservationItem } from '../../services/PanierService';
+import { Router, RouterModule } from '@angular/router';
+import { PanierService, Commande } from '../../services/PanierService';
 
 @Component({
   selector: 'app-panier',
@@ -12,13 +12,14 @@ import { PanierService, ReservationItem } from '../../services/PanierService';
 })
 export class PanierComponent implements OnInit {
 
-  reservations: ReservationItem[] = [];
+  commande: Commande | null = null;
   chargement = true;
   erreur = '';
 
   constructor(
     private panierService: PanierService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -26,9 +27,10 @@ export class PanierComponent implements OnInit {
   }
 
   chargerPanier(): void {
-    this.panierService.getReservations().subscribe({
+    this.panierService.getCommandes().subscribe({
       next: (data) => {
-        this.reservations = data;
+        // On prend la commande en attente s'il y en a une
+        this.commande = data.find(c => c.statut === 'en attente') ?? null;
         this.chargement = false;
         this.cdr.detectChanges();
       },
@@ -40,28 +42,35 @@ export class PanierComponent implements OnInit {
     });
   }
 
-  supprimer(id: number): void {
-    this.panierService.supprimerReservation(id).subscribe({
+  supprimer(reservationId: number): void {
+    this.panierService.supprimerReservation(reservationId).subscribe({
       next: () => {
-        this.reservations = this.reservations.filter(r => r.id !== id);
+        if (this.commande) {
+          this.commande.reservations = this.commande.reservations.filter(r => r.id !== reservationId);
+          this.cdr.detectChanges();
+        }
+      }
+    });
+  }
+
+  annuler(): void {
+    if (!this.commande) return;
+    this.panierService.annulerCommande(this.commande.id).subscribe({
+      next: () => {
+        this.commande = null;
         this.cdr.detectChanges();
       }
     });
   }
 
-  validerTout(): void {
-    const actives = this.reservations.filter(r => r.statut === 'active');
-    actives.forEach(r => {
-      this.panierService.validerReservation(r.id).subscribe({
-        next: () => {
-          this.reservations = this.reservations.filter(res => res.id !== r.id);
-          this.cdr.detectChanges();
-        }
-      });
-    });
-  }
-
-  get total(): number {
-    return this.reservations.reduce((sum, r) => sum + r.tome.prix, 0);
+  valider(): void {
+  if (!this.commande) return;
+  this.panierService.soumettre(this.commande.id).subscribe({
+    next: () => {
+      this.commande = null;
+      this.cdr.detectChanges();
+      this.router.navigate(['/']);
+    }
+  });
   }
 }

@@ -56,6 +56,7 @@
 
   &__vide a {
     display: inline-block;
+    text-decoration: none;
     margin-top: 16px;
   }
 
@@ -101,33 +102,33 @@
     color: #666;
   }
 
-  &__statut {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 20px;
-    width: fit-content;
+  // &__statut {
+  //   font-size: 12px;
+  //   font-weight: 600;
+  //   padding: 3px 10px;
+  //   border-radius: 20px;
+  //   width: fit-content;
 
-    &.statut--active {
-      background: #fff3e0;
-      color: #e65100;
-    }
+  //   &.statut--active {
+  //     background: #fff3e0;
+  //     color: #e65100;
+  //   }
 
-    &.statut--validée {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
+  //   &.statut--validée {
+  //     background: #e8f5e9;
+  //     color: #2e7d32;
+  //   }
 
-    &.statut--annulée {
-      background: #fce4ec;
-      color: #c62828;
-    }
+  //   &.statut--annulée {
+  //     background: #fce4ec;
+  //     color: #c62828;
+  //   }
 
-    &.statut--clôturée {
-      background: #eeeeee;
-      color: #616161;
-    }
-  }
+  //   &.statut--clôturée {
+  //     background: #eeeeee;
+  //     color: #616161;
+  //   }
+  // }
 
   &__prix-bloc {
     display: flex;
@@ -189,8 +190,8 @@
 
 .panier__valider {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
+  justify-content: space-between;
+  margin-top: 16px;
 }
 
 .panier__btn-valider {
