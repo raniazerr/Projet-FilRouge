@@ -60,7 +60,8 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['PUT', 'PATCH'])]
-    public function edit(Request $request, ?User $user, EntityManagerInterface $entityManager): JsonResponse
+    #[IsGranted('ROLE_ADMIN')]
+    public function edit(Request $request, ?User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         if (!$user) {
             return new JsonResponse(['error' => 'User not found'], Response::HTTP_NOT_FOUND);

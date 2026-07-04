@@ -1,0 +1,324 @@
+.profile-page {
+  min-height: calc(100vh - 70px);
+  background: #f5f5f5;
+}
+
+.profile__retour {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 24px 0;
+}
+
+.profile {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+
+  &__titre {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 24px;
+  }
+
+  &__loading,
+  &__erreur {
+    text-align: center;
+    padding: 60px 0;
+    color: #666;
+  }
+
+  &__erreur {
+    color: #c62828;
+  }
+
+  &__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  // ---- Carte header : avatar + identité ----
+  &__header-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  &__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e63312, #ff6a4d);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__identite {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__nom-complet {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  &__email {
+    font-size: 14px;
+    color: #666;
+  }
+
+  &__badge-inscription {
+    margin-top: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #e65100;
+    background: #fff3e0;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+  }
+
+  // ---- Carte formulaire ----
+  &__card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    padding: 24px;
+  }
+
+  &__card-titre {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 18px;
+  }
+}
+
+// ---- Formulaire ----
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &__row {
+    display: flex;
+    gap: 16px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+  }
+
+  &__group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+  }
+
+  &__input {
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1a1a1a;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #e63312;
+    }
+  }
+
+  &__divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 4px 0;
+  }
+
+  &__sous-titre {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+}
+
+.btn-enregistrer {
+  background: #e63312;
+  border: 2px solid #e63312;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  padding: 10px 28px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c62828;
+    border-color: #c62828;
+  }
+
+  &:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+// ---- Messages succès / erreur ----
+.alert {
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+
+  &-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &-error {
+    background: #fce4ec;
+    color: #c62828;
+  }
+}
+
+// ---- Réservations (même DA que le panier) ----
+.profile__reservations {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile__vide {
+  text-align: center;
+  padding: 40px 0;
+  color: #666;
+}
+
+.reservation-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  &__numero {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  &__date {
+    font-size: 13px;
+    color: #666;
+  }
+
+  &__statut {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+
+    &--soumise {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    &--confirmée {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    &--expirée {
+      background: #fce4ec;
+      color: #c62828;
+    }
+  }
+
+  &__tomes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__tome {
+    font-size: 14px;
+    color: #444;
+
+    &::before {
+      content: '•';
+      color: #e63312;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid #eee;
+    padding-top: 12px;
+  }
+
+  &__total {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #e63312;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile__header-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}

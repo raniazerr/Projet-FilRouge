@@ -1,0 +1,97 @@
+<div class="profile-page">
+  <div class="profile" *ngIf="profil">
+    <h2 class="profile__titre">Mon compte</h2>
+
+    <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+    <div class="profile__grid">
+
+      <!-- Carte header : avatar + identité -->
+      <div class="profile__header-card">
+        <div class="profile__avatar">{{ prenom.charAt(0) }}{{ nom.charAt(0) }}</div>
+        <div class="profile__identite">
+          <div class="profile__nom-complet">{{ prenom }} {{ nom }}</div>
+          <div class="profile__email">{{ email }}</div>
+          <div class="profile__badge-inscription" *ngIf="profil.date_inscription">
+            Membre depuis le {{ profil.date_inscription | date: 'dd/MM/yyyy' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte formulaire -->
+      <div class="profile__card">
+        <h3 class="profile__card-titre">Informations personnelles</h3>
+
+        <form class="profile-form" (ngSubmit)="enregistrer()">
+          <div class="profile-form__row">
+            <div class="profile-form__group">
+              <label class="profile-form__label" for="nom">Nom</label>
+              <input class="profile-form__input" type="text" id="nom" [(ngModel)]="nom" name="nom" required>
+            </div>
+
+            <div class="profile-form__group">
+              <label class="profile-form__label" for="prenom">Prénom</label>
+              <input class="profile-form__input" type="text" id="prenom" [(ngModel)]="prenom" name="prenom" required>
+            </div>
+          </div>
+
+          <div class="profile-form__group">
+            <label class="profile-form__label" for="email">Email</label>
+            <input class="profile-form__input" type="email" id="email" [(ngModel)]="email" name="email" required>
+          </div>
+
+          <hr class="profile-form__divider">
+
+          <h3 class="profile__card-titre">Changer le mot de passe</h3>
+
+          <div class="profile-form__row">
+            <div class="profile-form__group">
+              <label class="profile-form__label" for="currentPassword">Mot de passe actuel</label>
+              <input class="profile-form__input" type="password" id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword">
+            </div>
+
+            <div class="profile-form__group">
+              <label class="profile-form__label" for="password">Nouveau mot de passe</label>
+              <input class="profile-form__input" type="password" id="password" [(ngModel)]="password" name="password">
+            </div>
+          </div>
+
+          <div class="profile-form__actions">
+            <button class="btn-enregistrer" type="submit">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Carte réservations -->
+      <div class="profile__card">
+        <h3 class="profile__card-titre">Mes réservations</h3>
+
+        <p class="profile__vide" *ngIf="reservations.length === 0">Aucune réservation pour le moment.</p>
+
+        <div class="profile__reservations">
+          <div class="reservation-card" *ngFor="let commande of reservations">
+            <div class="reservation-card__header">
+              <span class="reservation-card__numero">Commande #{{ commande.id }}</span>
+              <span class="reservation-card__statut" [ngClass]="'reservation-card__statut--' + commande.statut">
+                {{ commande.statut }}
+              </span>
+              <span class="reservation-card__date">{{ commande.date_commande | date: 'dd/MM/yyyy' }}</span>
+            </div>
+
+            <ul class="reservation-card__tomes">
+              <li class="reservation-card__tome" *ngFor="let r of commande.reservations">
+                {{ r.tome.manga_titre }} — Tome {{ r.tome.numero_tome }}
+              </li>
+            </ul>
+
+            <div class="reservation-card__footer">
+              <span class="reservation-card__total">{{ commande.total }} €</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

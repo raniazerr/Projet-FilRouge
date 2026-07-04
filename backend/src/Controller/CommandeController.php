@@ -62,6 +62,22 @@ class CommandeController extends AbstractController
         return new JsonResponse($this->normalize($commande), Response::HTTP_CREATED);
     }
 
+    // GET /api/commandes/historique — voir l'historique des commandes (client)
+    #[Route('/historique', methods: ['GET'])]
+    public function historique(CommandeRepository $repo): JsonResponse
+    {
+        $commandes = $repo->createQueryBuilder('c')
+            ->where('c.utilisateur = :user')
+            ->andWhere('c.statut != :panier')
+            ->setParameter('user', $this->getUser())
+            ->setParameter('panier', 'en attente')
+            ->orderBy('c.date_commande', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return new JsonResponse(array_map([$this, 'normalize'], $commandes));
+    }
+
     // DELETE /api/commandes/reservation/{id} — supprimer un tome du panier
     #[Route('/reservation/{id}', methods: ['DELETE'])]
     public function supprimerReservation(Reservation $reservation, EntityManagerInterface $em): JsonResponse
@@ -105,6 +121,7 @@ class CommandeController extends AbstractController
 
         return new JsonResponse($this->normalize($commande));
     }
+    
 
     // GET /api/commandes/admin — voir toutes les commandes (admin)
     #[IsGranted('ROLE_ADMIN')]
