@@ -1,6 +1,22 @@
 <div class="profile-page">
-  <div class="profile" *ngIf="profil">
-    <h2 class="profile__titre">Mon compte</h2>
+
+  <!-- Chargement -->
+  <div class="profile__loading" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Chargement de votre profil...</p>
+  </div>
+
+  <!-- Erreur (chargement échoué) -->
+  <div class="profile__erreur" *ngIf="!isLoading && !profil">
+    {{ errorMessage || 'Impossible de charger votre profil.' }}
+  </div>
+
+  <!-- Contenu -->
+  <div class="profile" *ngIf="!isLoading && profil">
+    <div class="profile__header-row">
+      <h2 class="profile__titre">Mon compte</h2>
+      <button class="btn-deconnexion" (click)="deconnexion()">Déconnexion</button>
+    </div>
 
     <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
     <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
@@ -58,7 +74,9 @@
           </div>
 
           <div class="profile-form__actions">
-            <button class="btn-enregistrer" type="submit">Enregistrer</button>
+            <button class="btn-enregistrer" type="submit" [disabled]="isSaving">
+              {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+            </button>
           </div>
         </form>
       </div>

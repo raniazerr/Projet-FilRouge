@@ -25,7 +25,7 @@ public function index(MangaRepository $mangaRepository): JsonResponse
 }
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse 
     {
     $data = json_decode($request->getContent(), true);
@@ -88,7 +88,7 @@ public function show(
 }
 
     #[Route('/{id}/edit', name: 'app_manga_edit', methods: ['PUT', 'PATCH'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {
@@ -110,7 +110,7 @@ public function show(
     }
 
     #[Route('/{id}', name: 'app_manga_delete', methods: ['DELETE'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(?Manga $manga, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$manga) {

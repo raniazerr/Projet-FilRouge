@@ -67,6 +67,7 @@ class ProfileController extends AbstractController
             'nom' => $user->getNom(),
             'prenom' => $user->getPrenom(),
             'date_inscription' => $user->getDateInscription()?->format('Y-m-d H:i:s'),
+            'roles' => $user->getRoles(),
         ];
     }
 }

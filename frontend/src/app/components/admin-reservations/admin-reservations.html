@@ -1,0 +1,93 @@
+<div class="admin-page">
+  <div class="admin">
+    <h2 class="admin__titre">Gestion des réservations</h2>
+
+    <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+    <!-- Filtres -->
+    <div class="admin__filtres">
+      <button
+        class="filtre-btn"
+        [class.filtre-btn--actif]="filtreStatut === 'toutes'"
+        (click)="changerFiltre('toutes')">
+        Toutes
+      </button>
+      <button
+        class="filtre-btn"
+        [class.filtre-btn--actif]="filtreStatut === 'soumise'"
+        (click)="changerFiltre('soumise')">
+        Soumises
+      </button>
+      <button
+        class="filtre-btn"
+        [class.filtre-btn--actif]="filtreStatut === 'confirmée'"
+        (click)="changerFiltre('confirmée')">
+        Confirmées
+      </button>
+      <button
+        class="filtre-btn"
+        [class.filtre-btn--actif]="filtreStatut === 'expirée'"
+        (click)="changerFiltre('expirée')">
+        Expirées
+      </button>
+    </div>
+
+    <!-- Chargement -->
+    <div class="admin__loading" *ngIf="isLoading">
+      <div class="spinner"></div>
+      <p>Chargement des commandes...</p>
+    </div>
+
+    <!-- Vide -->
+    <p class="admin__vide" *ngIf="!isLoading && commandesFiltrees.length === 0">
+      Aucune commande pour ce filtre.
+    </p>
+
+    <!-- Liste -->
+    <div class="admin__liste" *ngIf="!isLoading">
+      <div class="commande-card" *ngFor="let commande of commandesFiltrees">
+        <div class="commande-card__header">
+          <div>
+            <span class="commande-card__numero">Commande #{{ commande.id }}</span>
+            <span class="commande-card__client">
+              {{ commande.utilisateur.prenom }} {{ commande.utilisateur.nom }} — {{ commande.utilisateur.email }}
+            </span>
+          </div>
+          <span class="commande-card__statut" [ngClass]="'commande-card__statut--' + commande.statut">
+            {{ commande.statut }}
+          </span>
+        </div>
+
+        <span class="commande-card__date">{{ commande.date_commande | date: 'dd/MM/yyyy HH:mm' }}</span>
+
+        <ul class="commande-card__tomes">
+          <li class="commande-card__tome" *ngFor="let r of commande.reservations">
+            {{ r.tome.manga_titre }} — Tome {{ r.tome.numero_tome }}
+            <span class="commande-card__stock" [class.commande-card__stock--rupture]="r.tome.stock <= 0">
+              (stock : {{ r.tome.stock }})
+            </span>
+          </li>
+        </ul>
+
+        <div class="commande-card__footer">
+          <span class="commande-card__total">{{ commande.total }} €</span>
+
+          <div class="commande-card__actions" *ngIf="commande.statut === 'soumise'">
+            <button
+              class="btn-expirer"
+              [disabled]="actionEnCours === commande.id"
+              (click)="expirer(commande)">
+              Expirer
+            </button>
+            <button
+              class="btn-confirmer"
+              [disabled]="actionEnCours === commande.id"
+              (click)="confirmer(commande)">
+              {{ actionEnCours === commande.id ? '...' : 'Confirmer' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

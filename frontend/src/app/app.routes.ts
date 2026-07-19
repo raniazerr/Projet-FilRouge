@@ -5,12 +5,16 @@ import { LoginComponent } from './components/login/login';
 import { InscriptionComponent } from './components/register/register';
 import { PanierComponent } from './components/panier/panier';
 import { ProfileComponent } from './components/profile/profile';
+import { authGuard } from './auth-guard-guard';
+import { adminGuard } from './admin-guard-guard';
+import { AdminReservationsComponent } from './components/admin-reservations/admin-reservations';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
     { path: 'manga/:id', component: MangaDetailComponent },
     { path: 'login', component: LoginComponent },
     { path: 'register', component: InscriptionComponent },
-    { path: 'panier', component: PanierComponent },
-    { path: 'profile', component: ProfileComponent },
+    { path: 'panier', component: PanierComponent, canActivate: [authGuard] },
+    { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+    { path: 'admin/reservations', component: AdminReservationsComponent, canActivate: [adminGuard] },
 ];

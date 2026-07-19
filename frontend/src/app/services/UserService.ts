@@ -8,6 +8,7 @@ export interface UserProfile {
   nom: string;
   prenom: string;
   date_inscription: string;
+  roles: string[];
 }
 
 export interface UpdateProfilePayload {

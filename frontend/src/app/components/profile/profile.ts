@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServUser, UserProfile } from '../../services/UserService';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +26,10 @@ export class ProfileComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private servUser: ServUser, private cdr: ChangeDetectorRef) {}
+  isLoading = true;
+  isSaving = false;
+
+  constructor(private servUser: ServUser, private cdr: ChangeDetectorRef, private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
     this.chargerProfil();
@@ -38,10 +43,12 @@ export class ProfileComponent implements OnInit {
         this.nom = data.nom;
         this.prenom = data.prenom;
         this.email = data.email;
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Impossible de charger le profil.';
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
@@ -60,9 +67,15 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  deconnexion(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   enregistrer(): void {
     this.successMessage = '';
     this.errorMessage = '';
+    this.isSaving = true;
 
     const payload: any = {
       nom: this.nom,
@@ -81,10 +94,12 @@ export class ProfileComponent implements OnInit {
         this.password = '';
         this.currentPassword = '';
         this.successMessage = 'Profil mis à jour.';
+        this.isSaving = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = err.error?.error || 'Erreur lors de la mise à jour.';
+        this.isSaving = false;
         this.cdr.detectChanges();
       }
     });
