@@ -9,8 +9,31 @@
   </div>
 
   <div class="navbar__actions">
-    <!-- Connecté -->
-    <ng-container *ngIf="connecte$ | async">
+    <ng-container *ngIf="!(connecte$ | async)">
+      <a routerLink="/login">
+        <span class="icon">👤</span>
+        <span class="label">Connexion / Inscription</span>
+      </a>
+    </ng-container>
+
+    <!-- Connecté en admin -->
+    <ng-container *ngIf="(connecte$ | async) && authService.isAdmin()">
+      <a routerLink="/admin/reservations">
+        <span class="icon">📦</span>
+        <span class="label">Commandes</span>
+      </a>
+      <a routerLink="/admin/catalogue">
+        <span class="icon">➕</span>
+        <span class="label">Ajouter un manga</span>
+      </a>
+      <a routerLink="/profile">
+        <span class="icon">👤</span>
+        <span class="label">Mon compte</span>
+      </a>
+    </ng-container>
+
+    <!-- Connecté en simple user -->
+    <ng-container *ngIf="(connecte$ | async) && !authService.isAdmin()">
       <a class="navbar__panier" routerLink="/panier">
         <span class="icon">🛒</span>
         <span class="label">Mon panier</span>
@@ -19,14 +42,6 @@
       <a routerLink="/profile">
         <span class="icon">👤</span>
         <span class="label">Mon compte</span>
-      </a>
-    </ng-container>
-
-    <!-- Non connecté -->
-    <ng-container *ngIf="!(connecte$ | async)">
-      <a routerLink="/login">
-        <span class="icon">👤</span>
-        <span class="label">Connexion / Inscription</span>
       </a>
     </ng-container>
   </div>
