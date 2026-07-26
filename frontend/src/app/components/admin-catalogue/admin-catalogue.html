@@ -1,0 +1,123 @@
+<div class="admin-page">
+  <div class="admin">
+    <h2 class="admin__titre">Gestion du catalogue</h2>
+
+    <!-- Recherche externe -->
+    <div class="admin__card">
+      <h3 class="admin__card-titre">Chercher un manga (API externe)</h3>
+
+      <div class="recherche-bar">
+        <input
+          type="text"
+          class="recherche-input"
+          placeholder="Titre du manga..."
+          [(ngModel)]="recherche"
+          (keyup.enter)="rechercher()">
+        <button class="btn-rechercher" [disabled]="isSearching" (click)="rechercher()">
+          {{ isSearching ? 'Recherche...' : 'Rechercher' }}
+        </button>
+      </div>
+
+      <p class="admin__erreur-inline" *ngIf="searchError">{{ searchError }}</p>
+
+      <div class="resultats-grid" *ngIf="resultatsApi.length > 0">
+        <div class="resultat-card" *ngFor="let r of resultatsApi">
+          <img class="resultat-card__image" [src]="r.image" [alt]="r.titre">
+          <div class="resultat-card__infos">
+            <span class="resultat-card__titre">{{ r.titre }}</span>
+            <span class="resultat-card__meta" *ngIf="r.volumes">{{ r.volumes }} volumes — {{ r.statut }}</span>
+
+            <button
+              class="btn-ajouter"
+              *ngIf="!dejaAuCatalogue(r.api_id)"
+              [disabled]="ajoutEnCours === r.api_id"
+              (click)="ajouterAuCatalogue(r)">
+              {{ ajoutEnCours === r.api_id ? 'Ajout...' : 'Ajouter au catalogue' }}
+            </button>
+            <span class="badge-deja-ajoute" *ngIf="dejaAuCatalogue(r.api_id)">Déjà au catalogue</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catalogue existant -->
+    <div class="admin__card">
+      <h3 class="admin__card-titre">Catalogue actuel</h3>
+
+      <div class="admin__loading" *ngIf="isLoadingCatalogue">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="catalogue-grid" *ngIf="!isLoadingCatalogue">
+        <div
+          class="catalogue-item"
+          *ngFor="let manga of catalogue"
+          [class.catalogue-item--actif]="mangaSelectionne?.id === manga.id"
+          (click)="selectionnerManga(manga)">
+          <img class="catalogue-item__image" [src]="manga.image" [alt]="manga.titre">
+          <span class="catalogue-item__titre">{{ manga.titre }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gestion des tomes du manga sélectionné -->
+    <div class="admin__card admin__card--tomes" *ngIf="mangaSelectionne">
+      <div class="admin__card-header">
+        <h3 class="admin__card-titre">Tomes — {{ mangaSelectionne.titre }}</h3>
+        <button class="btn-fermer" (click)="fermerSelection()">Fermer</button>
+      </div>
+
+      <div class="admin__loading" *ngIf="isLoadingTomes">
+        <div class="spinner"></div>
+      </div>
+
+      <table class="tomes-table" *ngIf="!isLoadingTomes && tomes.length > 0">
+        <thead>
+          <tr>
+            <th>Tome</th>
+            <th>Prix</th>
+            <th>Stock</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tome of tomes">
+            <td>{{ tome.numero_tome }}</td>
+            <td>{{ tome.prix }} €</td>
+            <td>{{ tome.stock }}</td>
+            <td>
+              <button class="btn-supprimer-tome" (click)="supprimerTome(tome)">Supprimer</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="admin__vide" *ngIf="!isLoadingTomes && tomes.length === 0">Aucun tome enregistré pour ce manga.</p>
+
+      <hr class="admin__divider">
+
+      <h4 class="admin__sous-titre">Ajouter un tome</h4>
+
+      <p class="admin__erreur-inline" *ngIf="tomeError">{{ tomeError }}</p>
+
+      <div class="tome-form">
+        <div class="tome-form__group">
+          <label class="tome-form__label">N° tome</label>
+          <input type="number" class="tome-form__input" [(ngModel)]="nouveauTome.numero_tome" min="1">
+        </div>
+        <div class="tome-form__group">
+          <label class="tome-form__label">Prix (€)</label>
+          <input type="number" class="tome-form__input" [(ngModel)]="nouveauTome.prix" min="0" step="0.01">
+        </div>
+        <div class="tome-form__group">
+          <label class="tome-form__label">Stock</label>
+          <input type="number" class="tome-form__input" [(ngModel)]="nouveauTome.stock" min="0">
+        </div>
+        <button class="btn-ajouter-tome" [disabled]="isSavingTome" (click)="ajouterTome()">
+          {{ isSavingTome ? 'Ajout...' : 'Ajouter' }}
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

@@ -33,6 +33,22 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
+  getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+    try {
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64));
+      return payload.roles || [];
+    } catch {
+      return [];
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.getRoles().includes('ROLE_ADMIN');
+  }
+
   isConnecte(): boolean {
     return this.connecteSubject.value;
   }

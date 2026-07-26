@@ -8,6 +8,7 @@ import { ProfileComponent } from './components/profile/profile';
 import { authGuard } from './auth-guard-guard';
 import { adminGuard } from './admin-guard-guard';
 import { AdminReservationsComponent } from './components/admin-reservations/admin-reservations';
+import { AdminCatalogueComponent } from './components/admin-catalogue/admin-catalogue';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -17,4 +18,5 @@ export const routes: Routes = [
     { path: 'panier', component: PanierComponent, canActivate: [authGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
     { path: 'admin/reservations', component: AdminReservationsComponent, canActivate: [adminGuard] },
+    { path: 'admin/catalogue', component: AdminCatalogueComponent, canActivate: [adminGuard] },
 ];

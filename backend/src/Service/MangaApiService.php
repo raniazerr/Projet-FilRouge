@@ -25,4 +25,21 @@ class MangaApiService
 
         return $response->toArray();
     }
+
+    // Recherche par titre — GET https://api.jikan.moe/v4/manga?q=...&limit=10
+    public function searchManga(string $query): array
+    {
+        $response = $this->client->request(
+            'GET',
+            'https://api.jikan.moe/v4/manga',
+            [
+                'query' => [
+                    'q' => $query,
+                    'limit' => 10,
+                ],
+            ]
+        );
+
+        return $response->toArray();
+    }
 }
