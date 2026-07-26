@@ -17,11 +17,45 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class MangaController extends AbstractController
 {
    #[Route('/index', name: 'app_manga_index', methods: ['GET'])]
-public function index(MangaRepository $mangaRepository): JsonResponse
+public function index(Request $request, MangaRepository $mangaRepository): JsonResponse
 {
-    $mangas = array_map([$this, 'normalizeManga'], $mangaRepository->findAll());
+    $tri = $request->query->get('tri');
+
+    $mangasEntities = $tri === 'popularite'
+        ? $mangaRepository->findAllSortedByPopularity()
+        : $mangaRepository->findAll();
+
+    $mangas = array_map([$this, 'normalizeManga'], $mangasEntities);
     $topMangas = array_map([$this, 'normalizeManga'], $mangaRepository->findMostReserved(3));
+
     return new JsonResponse(['mangas' => $mangas, 'top' => $topMangas]);
+}
+
+    // GET /manga/search?q=... — chercher un manga sur l'API externe (admin)
+#[Route('/search', name: 'app_manga_search', methods: ['GET'])]
+#[IsGranted('ROLE_ADMIN')]
+public function search(Request $request, MangaApiService $api): JsonResponse
+{
+    $query = $request->query->get('q', '');
+
+    if (strlen(trim($query)) < 2) {
+        return new JsonResponse(['error' => 'Requête trop courte (2 caractères min)'], Response::HTTP_BAD_REQUEST);
+    }
+
+    $data = $api->searchManga($query);
+
+    $resultats = array_map(function ($m) {
+        return [
+            'api_id' => $m['mal_id'],
+            'titre' => $m['title'],
+            'image' => $m['images']['jpg']['image_url'] ?? null,
+            'synopsis' => $m['synopsis'] ?? null,
+            'volumes' => $m['volumes'] ?? null,
+            'statut' => $m['status'] ?? null,
+        ];
+    }, $data['data'] ?? []);
+
+    return new JsonResponse($resultats);
 }
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]

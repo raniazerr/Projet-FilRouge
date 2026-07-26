@@ -29,6 +29,18 @@ class MangaRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findAllSortedByPopularity(): array
+    {
+    return $this->createQueryBuilder('m')
+        ->leftJoin('m.tomes', 't')
+        ->leftJoin('t.reservations', 'r')
+        ->addSelect('COUNT(r.id) as HIDDEN reservationCount')
+        ->groupBy('m.id')
+        ->orderBy('reservationCount', 'DESC')
+        ->getQuery()
+        ->getResult();
+    }
+
     //    /**
     //     * @return Manga[] Returns an array of Manga objects
     //     */

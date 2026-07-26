@@ -41,7 +41,7 @@ final class TomeController extends AbstractController
 
     // Créer un tome (admin)
     #[Route('', name: 'app_tome_new', methods: ['POST'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager, MangaRepository $mangaRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -72,7 +72,7 @@ final class TomeController extends AbstractController
 
     // Modifier un tome (admin)
     #[Route('/{id}', name: 'app_tome_edit', methods: ['PUT', 'PATCH'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, ?Tome $tome, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$tome) {
@@ -95,7 +95,7 @@ final class TomeController extends AbstractController
 
     // Supprimer un tome (admin)
     #[Route('/{id}', name: 'app_tome_delete', methods: ['DELETE'])]
-    // #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(?Tome $tome, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$tome) {

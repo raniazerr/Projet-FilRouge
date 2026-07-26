@@ -28,6 +28,9 @@ export class HomeComponent implements OnInit {
   // Genre sélectionné actuellement
   triGenre = '';
 
+  // Ordre de tri par popularité sélectionné actuellement
+  triPopulariteActif: 'asc' | 'desc' | null = null;
+
   // Indique si le menu déroulant de filtrage par genre est ouvert
   dropdownGenreOuvert = false;
 
@@ -68,6 +71,13 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  // Texte affiché sur le bouton de tri par popularité, dépend du tri actif
+  get labelPopularite(): string {
+    if (this.triPopulariteActif === 'desc') return 'Plus réservé';
+    if (this.triPopulariteActif === 'asc') return 'Moins réservé';
+    return 'Par popularité';
+  }
+
   toggleDropdown(lequel: 'genre' | 'pop'): void {
     if (lequel === 'genre') {
       this.dropdownGenreOuvert = !this.dropdownGenreOuvert;
@@ -81,18 +91,31 @@ export class HomeComponent implements OnInit {
   filtrerParGenre(genre: string): void {
     // Applique un filtre de genre et ferme le menu
     this.triGenre = genre;
+    this.triPopulariteActif = null;
     this.dropdownGenreOuvert = false;
     this.mangasFiltres = this.tousLesMangas.filter(m => m.genres?.includes(genre));
   }
 
   trierParPopularite(ordre: 'asc' | 'desc'): void {
-    // Ferme le menu de tri par popularité (implémentation du tri à ajouter si besoin)
     this.dropdownPopOuvert = false;
+    this.triPopulariteActif = ordre; // on garde en mémoire la sélection
+
+    this.mangaService.getMangas('popularite').subscribe({
+      next: (data) => {
+        this.mangasFiltres = ordre === 'asc' ? [...data.mangas].reverse() : data.mangas;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.erreur = true;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   reinitialiser(): void {
     // Réinitialise les filtres et restaure la liste complète
     this.triGenre = '';
+    this.triPopulariteActif = null;
     this.dropdownGenreOuvert = false;
     this.mangasFiltres = [...this.tousLesMangas];
   }

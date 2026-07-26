@@ -33,15 +33,15 @@
       </ul>
     </div>
 
-    <div class="dropdown" [class.ouvert]="dropdownPopOuvert">
+        <div class="dropdown" [class.ouvert]="dropdownPopOuvert">
       <button class="dropdown__btn" (click)="toggleDropdown('pop')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
-        <span>Par popularité</span>
+        <span>{{ labelPopularite }}</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
       </button>
       <ul class="dropdown__menu" *ngIf="dropdownPopOuvert">
-        <li (click)="trierParPopularite('asc')">Plus réservé</li>
-        <li (click)="trierParPopularite('desc')">Moins réservé</li>
+        <li (click)="trierParPopularite('desc')">Plus réservé</li>
+        <li (click)="trierParPopularite('asc')">Moins réservé</li>
       </ul>
     </div>
   </div>
