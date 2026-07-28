@@ -86,7 +86,7 @@ final class UserController extends AbstractController
             $user->setRoles($data['roles']);
         }
         if (isset($data['password'])) {
-            $user->setPassword((string) $data['password']);
+            $user->setPassword($passwordHasher->hashPassword($user, (string) $data['password']));
         }
 
         $entityManager->flush();
