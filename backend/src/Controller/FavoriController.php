@@ -44,9 +44,7 @@ final class FavoriController extends AbstractController
 
         $favori = new Favori();
         $favori->setUtilisateur($user);
-        $favori->setIdUtilisateur($user->getId());
         $favori->setManga($manga);
-        $favori->setIdManga($manga->getId());
 
         $entityManager->persist($favori);
         $entityManager->flush();
@@ -82,7 +80,6 @@ final class FavoriController extends AbstractController
                 return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
             }
             $favori->setUtilisateur($user);
-            $favori->setIdUtilisateur($user->getId());
         }
 
         if (isset($data['manga'])) {
@@ -91,7 +88,6 @@ final class FavoriController extends AbstractController
                 return new JsonResponse(['error' => 'Manga introuvable'], Response::HTTP_BAD_REQUEST);
             }
             $favori->setManga($manga);
-            $favori->setIdManga($manga->getId());
         }
 
         $entityManager->flush();
@@ -116,8 +112,6 @@ final class FavoriController extends AbstractController
     {
         return [
             'id' => $favori->getId(),
-            'id_utilisateur' => $favori->getIdUtilisateur(),
-            'id_manga' => $favori->getIdManga(),
             'utilisateur' => $favori->getUtilisateur()?->getId(),
             'manga' => $favori->getManga()?->getId(),
         ];
