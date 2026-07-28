@@ -97,6 +97,9 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     $manga->setImage($apiData['images']['jpg']['image_url']);
     $manga->setSynopsis($apiData['synopsis']);
     $manga->setGenres(array_map(fn($g) => $g['name'], $apiData['genres'] ?? []));
+    $manga->setAuteurs(array_map(fn($a) => $a['name'], $apiData['authors'] ?? []));
+    $manga->setVolumes($apiData['volumes'] ?? null);
+    $manga->setStatut($apiData['status'] ?? null);
 
     $entityManager->persist($manga);
     $entityManager->flush();
@@ -105,20 +108,9 @@ public function search(Request $request, MangaApiService $api): JsonResponse
 }
 
    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
-public function show(
-    ?Manga $manga,
-    MangaApiService $api
-): JsonResponse {
+public function show(?Manga $manga): JsonResponse {
     if (!$manga) {
         return new JsonResponse(['error' => 'Manga not found'], 404);
-    }
-
-    // Les donnees de base sont en BDD : si la source externe est indisponible,
-    // la fiche reste affichable et seuls auteurs / volumes / statut manquent.
-    try {
-        $apiData = $api->getManga($manga->getApiId());
-    } catch (HttpClientExceptionInterface $e) {
-        $apiData = [];
     }
 
     // Récupère les tomes et leur stock
@@ -134,12 +126,12 @@ public function show(
     return new JsonResponse([
         'id'          => $manga->getId(),
         'api_id'      => $manga->getApiId(),
-        'titre'       => $apiData['data']['title'] ?? $manga->getTitre(),
-        'description' => $apiData['data']['synopsis'] ?? $manga->getSynopsis(),
-        'image'       => $apiData['data']['images']['jpg']['image_url'] ?? $manga->getImage(),
-        'auteurs'     => array_map(fn($a) => $a['name'], $apiData['data']['authors'] ?? []),
-        'volumes'     => $apiData['data']['volumes'] ?? null,
-        'statut'      => $apiData['data']['status'] ?? null,
+        'titre'       => $manga->getTitre(),
+        'description' => $manga->getSynopsis(),
+        'image'       => $manga->getImage(),
+        'auteurs'     => $manga->getAuteurs() ?? [],
+        'volumes'     => $manga->getVolumes(),
+        'statut'      => $manga->getStatut(),
         'tomes'       => $tomes, // ← liste des tomes en stock
     ]);
 }
