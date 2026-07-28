@@ -43,6 +43,15 @@ class Manga
     #[ORM\Column]
     private array $genres = [];
 
+    #[ORM\Column(nullable: true)]
+    private ?array $auteurs = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $volumes = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $statut = null;
+
     public function __construct()
     {
         $this->tomes = new ArrayCollection();
@@ -122,6 +131,42 @@ class Manga
     public function setGenres(array $genres): static
     {
         $this->genres = $genres;
+
+        return $this;
+    }
+
+    public function getAuteurs(): ?array
+    {
+        return $this->auteurs;
+    }
+
+    public function setAuteurs(?array $auteurs): static
+    {
+        $this->auteurs = $auteurs;
+
+        return $this;
+    }
+
+    public function getVolumes(): ?int
+    {
+        return $this->volumes;
+    }
+
+    public function setVolumes(?int $volumes): static
+    {
+        $this->volumes = $volumes;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }
