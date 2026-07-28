@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\HttpClient\Exception\ExceptionInterface as HttpClientExceptionInterface;
 
 #[Route('/manga')]
 final class MangaController extends AbstractController
@@ -42,7 +43,14 @@ public function search(Request $request, MangaApiService $api): JsonResponse
         return new JsonResponse(['error' => 'Requête trop courte (2 caractères min)'], Response::HTTP_BAD_REQUEST);
     }
 
-    $data = $api->searchManga($query);
+    try {
+        $data = $api->searchManga($query);
+    } catch (HttpClientExceptionInterface $e) {
+        return new JsonResponse(
+            ['error' => 'Service de recherche momentanement indisponible'],
+            Response::HTTP_SERVICE_UNAVAILABLE
+        );
+    }
 
     $resultats = array_map(function ($m) {
         return [
@@ -63,16 +71,25 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse 
     {
     $data = json_decode($request->getContent(), true);
-    // $response = $api->getManga((int)$data['api_id']);
-    // var_dump($response);
-    // die();
-
 
     if (!isset($data['api_id'])) {
         return new JsonResponse(['error' => 'api_id required'], 400);
     }
 
-    $apiData = $api->getManga((int)$data['api_id'])['data'];
+    try {
+        $reponse = $api->getManga((int) $data['api_id']);
+    } catch (HttpClientExceptionInterface $e) {
+        return new JsonResponse(
+            ['error' => 'Source des metadonnees momentanement indisponible'],
+            Response::HTTP_SERVICE_UNAVAILABLE
+        );
+    }
+
+    if (!isset($reponse['data'])) {
+        return new JsonResponse(['error' => 'Manga introuvable sur la source externe'], Response::HTTP_BAD_REQUEST);
+    }
+
+    $apiData = $reponse['data'];
 
     $manga = new Manga();
     $manga->setApiId($apiData['mal_id']);
@@ -96,7 +113,13 @@ public function show(
         return new JsonResponse(['error' => 'Manga not found'], 404);
     }
 
-    $apiData = $api->getManga($manga->getApiId());
+    // Les donnees de base sont en BDD : si la source externe est indisponible,
+    // la fiche reste affichable et seuls auteurs / volumes / statut manquent.
+    try {
+        $apiData = $api->getManga($manga->getApiId());
+    } catch (HttpClientExceptionInterface $e) {
+        $apiData = [];
+    }
 
     // Récupère les tomes et leur stock
     $tomes = array_map(function($tome) {
@@ -112,7 +135,7 @@ public function show(
         'id'          => $manga->getId(),
         'api_id'      => $manga->getApiId(),
         'titre'       => $apiData['data']['title'] ?? $manga->getTitre(),
-        'description' => $apiData['data']['synopsis'] ?? null,
+        'description' => $apiData['data']['synopsis'] ?? $manga->getSynopsis(),
         'image'       => $apiData['data']['images']['jpg']['image_url'] ?? $manga->getImage(),
         'auteurs'     => array_map(fn($a) => $a['name'], $apiData['data']['authors'] ?? []),
         'volumes'     => $apiData['data']['volumes'] ?? null,
