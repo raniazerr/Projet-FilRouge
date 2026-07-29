@@ -20,18 +20,18 @@ class MangaApiService
     {
         $response = $this->client->request(
             'GET',
-            "https://api.jikan.moe/v4/manga/$id"
+            "https://api.tenrai.org/v1/manga/{$id}"
         );
 
         return $response->toArray();
     }
 
-    // Recherche par titre — GET https://api.jikan.moe/v4/manga?q=...&limit=10
+    // Recherche par titre
     public function searchManga(string $query): array
     {
         $response = $this->client->request(
             'GET',
-            'https://api.jikan.moe/v4/manga',
+            'https://api.tenrai.org/v1/manga',
             [
                 'query' => [
                     'q' => $query,
