@@ -222,6 +222,62 @@
   }
 }
 
+// ---- Favoris ----
+.profile__favoris {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.favori-card {
+  background: white;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #e63312;
+  }
+
+  &__image {
+    width: 48px;
+    height: 68px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  &__titre {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+}
+
+.btn-retirer {
+  background: white;
+  border: 2px solid #c62828;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c62828;
+  cursor: pointer;
+  padding: 6px 14px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c62828;
+    color: white;
+  }
+}
+
 // ---- Messages succès / erreur ----
 .alert {
   border-radius: 8px;

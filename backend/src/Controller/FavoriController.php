@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/favori')]
+#[Route('/api/favori')]
 final class FavoriController extends AbstractController
 {
     #[Route(name: 'app_favori_index', methods: ['GET'])]
@@ -22,6 +22,24 @@ final class FavoriController extends AbstractController
         $favoris = array_map([$this, 'normalizeFavori'], $favoriRepository->findAll());
 
         return new JsonResponse($favoris);
+    }
+   
+    #[Route('/mes-favoris', name: 'app_favori_mes_favoris', methods: ['GET'])]
+    public function mesFavoris(FavoriRepository $favoriRepository): JsonResponse
+    {
+        $user = $this->getUser();
+        $favoris = $favoriRepository->findBy(['utilisateur' => $user]);
+
+        $result = array_map(fn($f) => [
+            'favoriId' => $f->getId(),
+            'manga' => [
+                'id' => $f->getManga()->getId(),
+                'titre' => $f->getManga()->getTitre(),
+                'image' => $f->getManga()->getImage(),
+            ],
+        ], $favoris);
+
+        return new JsonResponse($result);
     }
 
     #[Route('/new', name: 'app_favori_new', methods: ['POST'])]
@@ -44,9 +62,7 @@ final class FavoriController extends AbstractController
 
         $favori = new Favori();
         $favori->setUtilisateur($user);
-        $favori->setIdUtilisateur($user->getId());
         $favori->setManga($manga);
-        $favori->setIdManga($manga->getId());
 
         $entityManager->persist($favori);
         $entityManager->flush();
@@ -82,7 +98,6 @@ final class FavoriController extends AbstractController
                 return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
             }
             $favori->setUtilisateur($user);
-            $favori->setIdUtilisateur($user->getId());
         }
 
         if (isset($data['manga'])) {
@@ -91,7 +106,6 @@ final class FavoriController extends AbstractController
                 return new JsonResponse(['error' => 'Manga introuvable'], Response::HTTP_BAD_REQUEST);
             }
             $favori->setManga($manga);
-            $favori->setIdManga($manga->getId());
         }
 
         $entityManager->flush();
@@ -116,8 +130,6 @@ final class FavoriController extends AbstractController
     {
         return [
             'id' => $favori->getId(),
-            'id_utilisateur' => $favori->getIdUtilisateur(),
-            'id_manga' => $favori->getIdManga(),
             'utilisateur' => $favori->getUtilisateur()?->getId(),
             'manga' => $favori->getManga()?->getId(),
         ];

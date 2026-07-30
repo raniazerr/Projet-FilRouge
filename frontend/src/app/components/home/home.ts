@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { ServManga, Manga } from '../../services/MangaService';
 import { ChangeDetectorRef } from '@angular/core'; // Mécanisme Angular qui force la mise à jour de l'affichage.
 
@@ -31,6 +31,9 @@ export class HomeComponent implements OnInit {
   // Ordre de tri par popularité sélectionné actuellement
   triPopulariteActif: 'asc' | 'desc' | null = null;
 
+  // Terme de recherche actuellement appliqué (vient de la navbar via l'URL)
+  rechercheActive = '';
+
   // Indique si le menu déroulant de filtrage par genre est ouvert
   dropdownGenreOuvert = false;
 
@@ -46,20 +49,27 @@ export class HomeComponent implements OnInit {
   // Index du slide actif dans le carrousel
   slideActif = 0;
 
-  constructor(private mangaService: ServManga, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private mangaService: ServManga,
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
     // Au démarrage du composant, on récupère les mangas via le service
     this.mangaService.getMangas().subscribe({
       next: (data) => {
         this.tousLesMangas = data.mangas;
-        this.mangasFiltres = [...data.mangas];
         this.mangas = data.mangas;
 
         // Extraction des genres uniques et tri alphabétique
         this.genres = [...new Set(data.mangas.flatMap(m => m.genres ?? []))].sort();
 
         this.chargement = false;
+
+        // Applique la recherche en cours (si l'URL contient déjà ?q=...)
+        this.appliquerRecherche(this.rechercheActive);
+
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -69,6 +79,31 @@ export class HomeComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+
+    // Écoute le paramètre ?q= dans l'URL, à chaque changement (recherche depuis la navbar)
+    this.route.queryParams.subscribe(params => {
+      this.rechercheActive = params['q'] || '';
+      if (this.tousLesMangas.length > 0) {
+        this.appliquerRecherche(this.rechercheActive);
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  // Filtre la liste par titre (recherche insensible à la casse), remplace les autres filtres actifs
+  appliquerRecherche(terme: string): void {
+    if (!terme) {
+      this.mangasFiltres = [...this.tousLesMangas];
+      return;
+    }
+
+    this.triGenre = '';
+    this.triPopulariteActif = null;
+
+    const termeNormalise = terme.toLowerCase();
+    this.mangasFiltres = this.tousLesMangas.filter(m =>
+      m.titre.toLowerCase().startsWith(termeNormalise)
+    );
   }
 
   // Texte affiché sur le bouton de tri par popularité, dépend du tri actif

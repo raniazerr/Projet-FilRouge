@@ -4,8 +4,22 @@
   </div>
 
   <div class="navbar__search">
-    <input type="text" placeholder="Rechercher..." [(ngModel)]="searchQuery" />
-    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      placeholder="Rechercher..."
+      [(ngModel)]="searchQuery"
+      (input)="onSaisie()"
+      (focus)="onSaisie()"
+      (blur)="fermerSuggestions()"
+      (keyup.enter)="rechercher()" />
+    <span class="search-icon" (click)="rechercher()">🔍</span>
+
+    <ul class="navbar__suggestions" *ngIf="suggestionsVisibles">
+      <li *ngFor="let manga of suggestions" (mousedown)="choisirSuggestion(manga)">
+        <img [src]="manga.image" [alt]="manga.titre" />
+        <span>{{ manga.titre }}</span>
+      </li>
+    </ul>
   </div>
 
   <div class="navbar__actions">

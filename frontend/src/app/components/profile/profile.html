@@ -81,35 +81,61 @@
         </form>
       </div>
 
-      <!-- Carte réservations -->
-      <div class="profile__card">
-        <h3 class="profile__card-titre">Mes réservations</h3>
+<!-- Carte favoris -->
+<div class="profile__card" *ngIf="!authService.isAdmin()">
+  <h3 class="profile__card-titre">Mes favoris</h3>
 
-        <p class="profile__vide" *ngIf="reservations.length === 0">Aucune réservation pour le moment.</p>
+  <div class="profile__loading" *ngIf="chargementFavoris">
+    <div class="spinner"></div>
+  </div>
 
-        <div class="profile__reservations">
-          <div class="reservation-card" *ngFor="let commande of reservations">
-            <div class="reservation-card__header">
-              <span class="reservation-card__numero">Commande #{{ commande.id }}</span>
-              <span class="reservation-card__statut" [ngClass]="'reservation-card__statut--' + commande.statut">
-                {{ commande.statut }}
-              </span>
-              <span class="reservation-card__date">{{ commande.date_commande | date: 'dd/MM/yyyy' }}</span>
-            </div>
+  <ng-container *ngIf="!chargementFavoris">
+    <p class="profile__vide" *ngIf="favoris.length === 0">Aucun favori pour le moment.</p>
 
-            <ul class="reservation-card__tomes">
-              <li class="reservation-card__tome" *ngFor="let r of commande.reservations">
-                {{ r.tome.manga_titre }} — Tome {{ r.tome.numero_tome }}
-              </li>
-            </ul>
+    <div class="profile__favoris">
+      <div class="favori-card" *ngFor="let f of favoris">
+        <img [src]="f.manga.image" [alt]="f.manga.titre" class="favori-card__image">
+        <span class="favori-card__titre">{{ f.manga.titre }}</span>
+        <button class="btn-retirer" (click)="supprimerFavori(f.favoriId)">Retirer</button>
+      </div>
+    </div>
+  </ng-container>
+</div>
 
-            <div class="reservation-card__footer">
-              <span class="reservation-card__total">{{ commande.total }} €</span>
-            </div>
-          </div>
+<!-- Carte réservations -->
+<div class="profile__card" *ngIf="!authService.isAdmin()">
+  <h3 class="profile__card-titre">Mes réservations</h3>
+
+  <div class="profile__loading" *ngIf="chargementReservations">
+    <div class="spinner"></div>
+  </div>
+
+  <ng-container *ngIf="!chargementReservations">
+    <p class="profile__vide" *ngIf="reservations.length === 0">Aucune réservation pour le moment.</p>
+
+    <div class="profile__reservations">
+      <div class="reservation-card" *ngFor="let commande of reservations">
+        <div class="reservation-card__header">
+          <span class="reservation-card__numero">Commande #{{ commande.id }}</span>
+          <span class="reservation-card__statut" [ngClass]="'reservation-card__statut--' + commande.statut">
+            {{ commande.statut }}
+          </span>
+          <span class="reservation-card__date">{{ commande.date_commande | date: 'dd/MM/yyyy' }}</span>
+        </div>
+
+        <ul class="reservation-card__tomes">
+          <li class="reservation-card__tome" *ngFor="let r of commande.reservations">
+            {{ r.tome.manga_titre }} — Tome {{ r.tome.numero_tome }}
+          </li>
+        </ul>
+
+        <div class="reservation-card__footer">
+          <span class="reservation-card__total">{{ commande.total }} €</span>
         </div>
       </div>
-
     </div>
-  </div>
+  </ng-container>
+</div>
+</div>
+</div>
 </div>

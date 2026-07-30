@@ -24,13 +24,16 @@
 
   <div class="detail__infos">
 
-    <div class="detail__header">
+   <div class="detail__header">
       <h1 class="detail__titre">{{ manga.titre }}</h1>
+      <button class="btn-favori" [class.actif]="estFavori" [disabled]="favoriEnCours" (click)="toggleFavori()">
+        {{ estFavori ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' }}
+      </button>
       <span class="detail__badge" *ngIf="tomeSelectionne"
       [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
       {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
     </span>
-    </div>
+  </div>
 
     <div class="detail__meta" *ngIf="manga.auteurs.length > 0">
       <span class="detail__meta-label">Auteur{{ manga.auteurs.length > 1 ? 's' : '' }}</span>

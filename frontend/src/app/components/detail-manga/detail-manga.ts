@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
 import { ServManga } from '../../services/MangaService';
 import { PanierService } from '../../services/PanierService';
+import { ServUser } from '../../services/UserService';
+import { FavoriService, Favori } from '../../services/FavoriService';
 
 export interface Tome {
   id: number;
@@ -38,11 +40,16 @@ export class MangaDetailComponent implements OnInit {
   tomeSelectionne: Tome | null = null;
   chargement = true;
   erreur = false;
+  userId: number | null = null;
+  estFavori = false;
+  favoriId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private mangaService: ServManga,
     private panierService: PanierService,
+    private servUser: ServUser,
+    private favoriService: FavoriService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -60,6 +67,7 @@ export class MangaDetailComponent implements OnInit {
         // Sélectionne le premier tome disponible par défaut
         this.tomeSelectionne = null;
         this.chargement = false;
+        this.verifierFavori();
         this.cdr.detectChanges();
       },
       error: () => {
@@ -69,6 +77,70 @@ export class MangaDetailComponent implements OnInit {
       }
     });
   }
+
+  verifierFavori(): void {
+  this.servUser.getProfile().subscribe({
+    next: (profil) => {
+      this.userId = profil.id;
+      this.favoriService.getFavoris().subscribe({
+        next: (favoris) => {
+          const favori = favoris.find(f => f.utilisateur === this.userId && f.manga === this.manga?.id);
+          if (favori) {
+            this.estFavori = true;
+            this.favoriId = favori.id;
+          }
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  });
+}
+
+favoriEnCours = false;
+
+toggleFavori(): void {
+  if (this.favoriEnCours || !this.manga || !this.userId) return;
+  this.favoriEnCours = true;
+
+  const wasFavori = this.estFavori;
+  const oldFavoriId = this.favoriId;
+
+  // update optimiste
+  this.estFavori = !wasFavori;
+  this.cdr.detectChanges();
+
+  if (!wasFavori) {
+    // AJOUT
+    this.favoriService.ajouter(this.userId, this.manga.id).subscribe({
+      next: (favori: Favori) => {
+        this.favoriId = favori.id;
+        this.favoriEnCours = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.estFavori = wasFavori;
+        this.favoriEnCours = false;
+        this.cdr.detectChanges();
+      }
+    });
+  } else {
+    // RETRAIT
+    if (!oldFavoriId) { this.favoriEnCours = false; return; }
+    this.favoriService.supprimer(oldFavoriId).subscribe({
+      next: () => {
+        this.favoriId = null;
+        this.favoriEnCours = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.estFavori = wasFavori;
+        this.favoriId = oldFavoriId;
+        this.favoriEnCours = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+}
 
   getTomeById(event: Event): Tome {
   const id = +(event.target as HTMLSelectElement).value;

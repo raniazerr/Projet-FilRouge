@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ServUser, UserProfile } from '../../services/UserService';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/AuthService';
+import { FavoriService } from '../../services/FavoriService';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ import { AuthService } from '../../services/AuthService';
 export class ProfileComponent implements OnInit {
   profil: UserProfile | null = null;
   reservations: any[] = [];
+  favoris: { favoriId: number; manga: any }[] = [];
 
   // form fields
   nom = '';
@@ -29,11 +31,19 @@ export class ProfileComponent implements OnInit {
   isLoading = true;
   isSaving = false;
 
-  constructor(private servUser: ServUser, private cdr: ChangeDetectorRef, private authService: AuthService, private router: Router) {}
+  constructor(
+    private servUser: ServUser,
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService,
+    private router: Router,
+    private favoriService: FavoriService
+  ) {}
 
   ngOnInit(): void {
     this.chargerProfil();
-    this.chargerReservations();
+    if (!this.authService.isAdmin()) {
+      this.chargerReservations();
+    }
   }
 
   chargerProfil(): void {
@@ -44,6 +54,9 @@ export class ProfileComponent implements OnInit {
         this.prenom = data.prenom;
         this.email = data.email;
         this.isLoading = false;
+        if (!this.authService.isAdmin()) {
+          this.chargerFavoris();
+        }
         this.cdr.detectChanges();
       },
       error: () => {
@@ -54,14 +67,42 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  chargerReservations(): void {
-    this.servUser.getHistoriqueCommandes().subscribe({
-      next: (data) => {
-        this.reservations = data;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.errorMessage = 'Impossible de charger les réservations.';
+chargementFavoris = true;
+chargementReservations = true;
+
+chargerReservations(): void {
+  this.servUser.getHistoriqueCommandes().subscribe({
+    next: (data) => {
+      this.reservations = data;
+      this.chargementReservations = false;
+      this.cdr.detectChanges();
+    },
+    error: () => {
+      this.errorMessage = 'Impossible de charger les réservations.';
+      this.chargementReservations = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+chargerFavoris(): void {
+  this.favoriService.getMesFavoris().subscribe({
+    next: (favoris) => {
+      this.favoris = favoris.map(f => ({ favoriId: f.favoriId, manga: f.manga }));
+      this.chargementFavoris = false;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Erreur lors du chargement des favoris:', err);
+      this.chargementFavoris = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
+  supprimerFavori(favoriId: number): void {
+    this.favoriService.supprimer(favoriId).subscribe({
+      next: () => {
+        this.favoris = this.favoris.filter(f => f.favoriId !== favoriId);
         this.cdr.detectChanges();
       }
     });

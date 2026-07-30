@@ -144,6 +144,30 @@
   }
 }
 
+// Bouton favori
+.btn-favori {
+  background: white;
+  border: 2px solid var(--rouge-principal);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--rouge-principal);
+  cursor: pointer;
+  padding: 8px 16px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #fce4ec;
+  }
+
+  &.actif {
+    background: var(--rouge-principal);
+    color: white;
+  }
+}
+
 // Select tome
 .tome-select {
   width: 25%;
