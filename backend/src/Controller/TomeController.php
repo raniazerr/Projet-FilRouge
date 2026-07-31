@@ -105,6 +105,20 @@ final class TomeController extends AbstractController
             return new JsonResponse(['error' => 'Tome introuvable'], Response::HTTP_NOT_FOUND);
         }
 
+        // Réservations "engagées" — soumises ou confirmées, donc validées par un client
+        $reservationsEngagees = $tome->getReservations()->filter(
+            fn($r) => in_array($r->getCommande()->getStatut(), ['soumise', 'confirmée'])
+        );
+
+        if (!$reservationsEngagees->isEmpty()) {
+            return new JsonResponse(['error' => 'Impossible de supprimer : ce tome fait partie de commandes déjà soumises ou confirmées'], Response::HTTP_CONFLICT);
+        }
+
+        // Réservations en panier ("en attente") — pas encore engagées, on peut les retirer avec le tome
+        foreach ($tome->getReservations() as $reservation) {
+            $entityManager->remove($reservation);
+        }
+
         $entityManager->remove($tome);
         $entityManager->flush();
 

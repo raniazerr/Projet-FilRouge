@@ -6,6 +6,7 @@ use App\Entity\Commande;
 use App\Entity\Reservation;
 use App\Repository\CommandeRepository;
 use App\Repository\TomeRepository;
+use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -33,18 +34,39 @@ class CommandeController extends AbstractController
     #[Route('/ajouter', methods: ['POST'])]
     public function ajouter(Request $request, TomeRepository $tomeRepo, CommandeRepository $commandeRepo, EntityManagerInterface $em): JsonResponse
     {
+        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+        return new JsonResponse(['error' => 'Les administrateurs ne peuvent pas réserver de tomes'], Response::HTTP_FORBIDDEN);
+    }
+    
         $data = json_decode($request->getContent(), true);
 
-        $tome = $tomeRepo->find($data['tome_id'] ?? null);
+    $em->beginTransaction();
+    try {
+        // Bloque la ligne tant que la transaction n'est pas finie,
+        // empêchant deux requêtes concurrentes de lire le même stock en même temps
+        $tome = $tomeRepo->find($data['tome_id'] ?? null, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE);
         if (!$tome) {
+            $em->rollback();
             return new JsonResponse(['error' => 'Tome introuvable'], Response::HTTP_BAD_REQUEST);
         }
 
-        if ($tome->getStock() <= 0) {
+        // Compte les réservations actives (en attente ou soumises) sur ce tome
+        $reservationsActives = $em->createQueryBuilder()
+            ->select('COUNT(r.id)')
+            ->from(Reservation::class, 'r')
+            ->join('r.commande', 'c')
+            ->where('r.tome = :tome')
+            ->andWhere('c.statut IN (:statuts)')
+            ->setParameter('tome', $tome)
+            ->setParameter('statuts', ['en attente', 'soumise'])
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if ($reservationsActives >= $tome->getStock()) {
+            $em->rollback();
             return new JsonResponse(['error' => 'Tome en rupture de stock'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Cherche une commande en attente existante, sinon en crée une
         $commande = $commandeRepo->findOneBy([
             'utilisateur' => $this->getUser(),
             'statut' => 'en attente'
@@ -62,9 +84,15 @@ class CommandeController extends AbstractController
 
         $em->persist($reservation);
         $em->flush();
+        $em->commit();
 
         return new JsonResponse($this->normalize($commande), Response::HTTP_CREATED);
+
+    } catch (\Exception $e) {
+        $em->rollback();
+        throw $e;
     }
+}
 
     // GET /api/commandes/historique — voir l'historique des commandes (client)
     #[Route('/historique', methods: ['GET'])]

@@ -6,6 +6,7 @@ use App\Repository\FavoriRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: FavoriRepository::class)]
+#[ORM\UniqueConstraint(name: 'unique_favori_utilisateur_manga', columns: ['utilisateur_id', 'manga_id'])]
 class Favori
 {
     #[ORM\Id]
