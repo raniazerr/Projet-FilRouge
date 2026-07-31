@@ -16,6 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/tome')]
 final class TomeController extends AbstractController
 {
+    // Contrôleur de gestion des tomes.
+    // Il sert à lister les tomes d'un manga, à les créer et à les modifier ou supprimer.
+
     // Tous les tomes d'un manga
     #[Route('/manga/{id}', name: 'app_tome_by_manga', methods: ['GET'])]
     public function byManga(int $id, TomeRepository $tomeRepository, MangaRepository $mangaRepository): JsonResponse

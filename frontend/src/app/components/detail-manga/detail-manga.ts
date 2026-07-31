@@ -35,6 +35,9 @@ export interface MangaDetail {
   styleUrl: './detail-manga.scss'
 })
 export class MangaDetailComponent implements OnInit {
+  // Ce composant affiche la page détaillée d'un manga.
+  // Il récupère les informations du manga, gère la sélection d'un tome,
+  // l'ajout au panier et le suivi des favoris de l'utilisateur.
 
   manga: MangaDetail | null = null;
   tomeSelectionne: Tome | null = null;
@@ -78,7 +81,9 @@ export class MangaDetailComponent implements OnInit {
     });
   }
 
-  verifierFavori(): void {
+chargementFavori = true;
+
+verifierFavori(): void {
   this.servUser.getProfile().subscribe({
     next: (profil) => {
       this.userId = profil.id;
@@ -89,23 +94,25 @@ export class MangaDetailComponent implements OnInit {
             this.estFavori = true;
             this.favoriId = favori.id;
           }
+          this.chargementFavori = false;
           this.cdr.detectChanges();
-        }
+        },
+        error: () => { this.chargementFavori = false; this.cdr.detectChanges(); }
       });
-    }
+    },
+    error: () => { this.chargementFavori = false; this.cdr.detectChanges(); }
   });
 }
 
 favoriEnCours = false;
 
 toggleFavori(): void {
-  if (this.favoriEnCours || !this.manga || !this.userId) return;
+  if (this.favoriEnCours || this.chargementFavori || !this.manga || !this.userId) return;
   this.favoriEnCours = true;
 
   const wasFavori = this.estFavori;
   const oldFavoriId = this.favoriId;
 
-  // update optimiste
   this.estFavori = !wasFavori;
   this.cdr.detectChanges();
 

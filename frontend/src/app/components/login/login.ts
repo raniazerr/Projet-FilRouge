@@ -12,6 +12,9 @@ import { AuthService } from '../../services/AuthService';
   styleUrl: './login.scss'
 })
 export class LoginComponent {
+  // Ce composant gère le formulaire de connexion de l'utilisateur.
+  // Il envoie les identifiants au service d'authentification et
+  // redirige vers la page d'accueil si la connexion réussit.
 
   email = '';
   password = '';

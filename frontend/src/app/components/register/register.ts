@@ -12,6 +12,9 @@ import { AuthService } from '../../services/AuthService';
   styleUrl: './register.scss'
 })
 export class InscriptionComponent {
+  // Ce composant gère l'inscription d'un nouvel utilisateur.
+  // Il valide les données du formulaire, crée le compte puis
+  // connecte automatiquement l'utilisateur après création.
 
   email = '';
   password = '';

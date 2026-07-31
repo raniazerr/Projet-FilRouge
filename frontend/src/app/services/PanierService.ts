@@ -30,7 +30,9 @@ export interface Commande {
 
 @Injectable({ providedIn: 'root' })
 export class PanierService {
-
+  // Service chargé de gérer les commandes et les réservations.
+  // Il permet d'ajouter un tome au panier, de le retirer, d'annuler
+  // une commande ou de la soumettre côté API.
   private apiUrl = 'http://localhost:8000/api/commandes';
 
   constructor(private http: HttpClient) {}

@@ -17,6 +17,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/api/commandes')]
 class CommandeController extends AbstractController
 {
+    // Contrôleur de gestion des commandes utilisateur.
+    // Il permet de créer une commande, d'ajouter des réservations,
+    // de consulter l'historique, de supprimer un article ou de valider une commande.
+
     // GET /api/commandes — voir son panier (commande en attente)
     #[Route('', methods: ['GET'])]
     public function index(CommandeRepository $repo): JsonResponse

@@ -12,6 +12,9 @@ import { ChangeDetectorRef } from '@angular/core'; // Mécanisme Angular qui for
   styleUrl: './home.scss'
 })
 export class HomeComponent implements OnInit {
+  // Ce composant représente la page d'accueil du site.
+  // Il charge la liste des mangas, applique les filtres et gère
+  // l'affichage du carrousel ainsi que la recherche depuis l'URL.
 
   // Liste de tous les mangas reçus depuis le service
   mangas: Manga[] = [];

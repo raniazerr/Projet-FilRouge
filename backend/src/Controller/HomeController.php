@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class HomeController extends AbstractController
 {
+    // Contrôleur simple de test pour vérifier que l'API backend est bien active.
     #[Route('/')]
     public function index(): JsonResponse
     {

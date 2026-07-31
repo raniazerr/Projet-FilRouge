@@ -11,6 +11,9 @@ import { PanierService, Commande } from '../../services/PanierService';
   styleUrl: './panier.scss'
 })
 export class PanierComponent implements OnInit {
+  // Ce composant affiche le panier de l'utilisateur.
+  // Il charge la commande en attente, permet de supprimer des réservations,
+  // d'annuler une commande ou de la valider.
 
   commande: Commande | null = null;
   chargement = true;

@@ -16,6 +16,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/manga')]
 final class MangaController extends AbstractController
 {
+    // Contrôleur principal des mangas.
+    // Il gère l'affichage de la liste, la recherche externe via l'API,
+    // l'ajout au catalogue local et la récupération du détail d'un manga.
+
    #[Route('/index', name: 'app_manga_index', methods: ['GET'])]
 public function index(Request $request, MangaRepository $mangaRepository): JsonResponse
 {

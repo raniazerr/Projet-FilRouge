@@ -45,6 +45,9 @@ export interface TomePayload {
   providedIn: 'root',
 })
 export class ServManga {
+  // Service central pour la gestion des mangas côté front-end.
+  // Il centralise les appels HTTP vers l'API Symfony pour afficher,
+  // rechercher, ajouter ou gérer les tomes d'un manga.
   private apiUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient) {}

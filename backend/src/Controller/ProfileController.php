@@ -15,6 +15,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_USER')]
 class ProfileController extends AbstractController
 {
+    // Contrôleur du profil utilisateur.
+    // Il permet de lire les informations du compte connecté et de les modifier.
+
     // GET /api/profile — infos du compte connecté
     #[Route('', methods: ['GET'])]
     public function show(): JsonResponse

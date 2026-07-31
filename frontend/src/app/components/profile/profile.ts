@@ -14,6 +14,9 @@ import { FavoriService } from '../../services/FavoriService';
   styleUrl: './profile.scss'
 })
 export class ProfileComponent implements OnInit {
+  // Ce composant affiche et met à jour le profil utilisateur.
+  // Il charge les informations du compte, les réservations et les favoris.
+
   profil: UserProfile | null = null;
   reservations: any[] = [];
   favoris: { favoriId: number; manga: any }[] = [];
@@ -145,4 +148,4 @@ chargerFavoris(): void {
       }
     });
   }
-}
+} 

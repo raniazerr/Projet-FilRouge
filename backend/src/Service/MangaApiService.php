@@ -6,6 +6,10 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MangaApiService
 {
+    // Service d'intégration avec l'API externe Tenrai.
+    // Il sert à rechercher des mangas et à récupérer leurs détails
+    // afin de les importer dans le catalogue local.
+
     public function __construct(
         private HttpClientInterface $client
     ) {}

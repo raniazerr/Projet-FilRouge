@@ -13,6 +13,9 @@ import { ServManga, Manga } from '../../services/MangaService';
   styleUrl: './navbar.scss'
 })
 export class NavbarComponent implements OnInit {
+  // Ce composant gère la barre de navigation en haut du site.
+  // Il permet de lancer une recherche, d'afficher des suggestions
+  // et de rediriger vers la page du manga sélectionné.
   searchQuery = '';
   panierCount = 0;
   connecte$;

@@ -16,6 +16,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/favori')]
 final class FavoriController extends AbstractController
 {
+    // Contrôleur de gestion des favoris.
+    // Il permet de lister, créer, afficher et supprimer des favoris associés à un utilisateur.
+
     #[Route(name: 'app_favori_index', methods: ['GET'])]
     public function index(FavoriRepository $favoriRepository): JsonResponse
     {

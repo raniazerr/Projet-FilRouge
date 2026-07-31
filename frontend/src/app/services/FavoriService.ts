@@ -10,6 +10,8 @@ export interface Favori {
 
 @Injectable({ providedIn: 'root' })
 export class FavoriService {
+  // Service de gestion des favoris utilisateur.
+  // Il centralise les requêtes pour ajouter, lister et supprimer des favoris.
   private apiUrl = 'http://localhost:8000/api/favori';
 
   constructor(private http: HttpClient) {}

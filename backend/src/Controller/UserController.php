@@ -16,6 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/user')]
 final class UserController extends AbstractController
 {
+    // Contrôleur de gestion des utilisateurs côté administrateur.
+    // Il permet de lister, créer ou modifier des comptes utilisateurs.
+
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): JsonResponse
     {

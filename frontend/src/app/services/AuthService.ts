@@ -4,7 +4,8 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
+  // Service d'authentification responsable de la connexion,
+  // de l'inscription, de la gestion du token et des rôles utilisateur.
   private apiUrl = 'http://localhost:8000/api';
   private connecteSubject = new BehaviorSubject<boolean>(!!localStorage.getItem('token'));
   connecte$ = this.connecteSubject.asObservable();

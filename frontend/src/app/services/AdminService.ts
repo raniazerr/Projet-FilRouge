@@ -18,6 +18,8 @@ export interface CommandeAdmin {
 
 @Injectable({ providedIn: 'root' })
 export class ServAdmin {
+  // Service réservé à l'administration.
+  // Il permet de récupérer toutes les commandes et de changer leur statut.
   private apiUrl = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}

@@ -14,6 +14,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class RegistrationController extends AbstractController
 {
+    // Contrôleur d'inscription.
+    // Il vérifie les données envoyées, crée un nouvel utilisateur
+    // et le sauvegarde avec un rôle utilisateur par défaut.
+
     #[Route('/api/register', name: 'api_register', methods: ['POST'])]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, UserRepository $userRepository): JsonResponse
     {

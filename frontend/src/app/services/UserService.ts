@@ -21,6 +21,8 @@ export interface UpdateProfilePayload {
 
 @Injectable({ providedIn: 'root' })
 export class ServUser {
+  // Service dédié à la gestion du profil utilisateur.
+  // Il permet de récupérer les informations du compte et de les modifier.
   private apiUrl = 'http://localhost:8000/api';
 
   constructor(private http: HttpClient) {}

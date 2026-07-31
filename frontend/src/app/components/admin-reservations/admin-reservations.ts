@@ -11,6 +11,9 @@ import { ServAdmin, CommandeAdmin } from '../../services/AdminService';
 })
 
 export class AdminReservationsComponent implements OnInit {
+  // Ce composant affiche toutes les commandes côté administration.
+  // Il permet de filtrer les commandes par statut et de les confirmer ou les expirer.
+
   commandes: CommandeAdmin[] = [];
   filtreStatut: string = 'toutes';
 

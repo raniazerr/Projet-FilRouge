@@ -11,6 +11,10 @@ import { ServManga, Manga, MangaApiResult, Tome } from '../../services/MangaServ
   styleUrl: './admin-catalogue.scss'
 })
 export class AdminCatalogueComponent implements OnInit {
+  // Ce composant permet à l'administrateur de gérer le catalogue.
+  // Il sert à rechercher des mangas depuis l'API externe,
+  // à les ajouter au catalogue local et à gérer leurs tomes.
+
   // Recherche externe
   recherche = '';
   resultatsApi: MangaApiResult[] = [];
