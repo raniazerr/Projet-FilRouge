@@ -7,6 +7,7 @@ import { ServManga } from '../../services/MangaService';
 import { PanierService } from '../../services/PanierService';
 import { ServUser } from '../../services/UserService';
 import { FavoriService, Favori } from '../../services/FavoriService';
+import { AuthService } from '../../services/AuthService';
 
 export interface Tome {
   id: number;
@@ -53,7 +54,8 @@ export class MangaDetailComponent implements OnInit {
     private panierService: PanierService,
     private servUser: ServUser,
     private favoriService: FavoriService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

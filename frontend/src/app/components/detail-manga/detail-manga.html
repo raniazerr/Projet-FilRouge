@@ -26,7 +26,7 @@
 
    <div class="detail__header">
       <h1 class="detail__titre">{{ manga.titre }}</h1>
-      <button class="btn-favori" [class.actif]="estFavori" [disabled]="favoriEnCours" (click)="toggleFavori()">
+      <button class="btn-favori" [class.actif]="estFavori" [disabled]="favoriEnCours || chargementFavori" (click)="toggleFavori()">
         {{ estFavori ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' }}
       </button>
       <span class="detail__badge" *ngIf="tomeSelectionne"
@@ -73,7 +73,7 @@
     <!-- Prix + Réserver -->
     <div class="detail__actions" *ngIf="tomeSelectionne">
       <span class="detail__prix">{{ tomeSelectionne.prix | number:'1.2-2' }} €</span>
-      <button class="btn-primary detail__btn" [disabled]="!estEnStock" (click)="ajouterAuPanier()">
+      <button *ngIf="!authService.isAdmin()" class="btn-primary detail__btn" [disabled]="!estEnStock" (click)="ajouterAuPanier()">
         🛒 Réserver
       </button>
     </div>
