@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: TomeRepository::class)]
+#[ORM\UniqueConstraint(name: 'unique_tome_manga_numero', columns: ['manga_id', 'numero_tome'])]
 class Tome
 {
     #[ORM\Id]
