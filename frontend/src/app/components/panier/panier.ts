@@ -50,6 +50,7 @@ export class PanierComponent implements OnInit {
       next: () => {
         if (this.commande) {
           this.commande.reservations = this.commande.reservations.filter(r => r.id !== reservationId);
+          this.commande.total = this.commande.reservations.reduce((sum, r) => sum + r.tome.prix, 0);
           this.cdr.detectChanges();
         }
       }

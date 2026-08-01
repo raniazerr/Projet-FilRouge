@@ -16,12 +16,12 @@
       ⚠️ {{ erreur }}
     </div>
 
-    <div class="panier__vide" *ngIf="!chargement && !commande">
-      <p>Votre panier est vide.</p>
-      <a routerLink="/" class="btn-primary">Découvrir les mangas</a>
+   <div class="panier__vide" *ngIf="!chargement && (!commande || commande.reservations.length === 0)">
+  <p>Votre panier est vide.</p>
+  <a routerLink="/" class="btn-primary">Découvrir les mangas</a>
     </div>
 
-    <div class="panier__liste" *ngIf="commande">
+  <div class="panier__liste" *ngIf="commande && commande.reservations.length > 0">
       <div class="panier__item" *ngFor="let r of commande.reservations">
         <img [src]="r.tome.manga_image" [alt]="r.tome.manga_titre" class="panier__image" />
         <div class="panier__infos">
