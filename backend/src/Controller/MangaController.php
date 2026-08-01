@@ -16,10 +16,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/manga')]
 final class MangaController extends AbstractController
 {
-    // Contrôleur principal des mangas.
-    // Il gère l'affichage de la liste, la recherche externe via l'API,
-    // l'ajout au catalogue local et la récupération du détail d'un manga.
-
    #[Route('/index', name: 'app_manga_index', methods: ['GET'])]
 public function index(Request $request, MangaRepository $mangaRepository): JsonResponse
 {
@@ -101,6 +97,9 @@ public function show(
     }
 
     $apiData = $api->getManga($manga->getApiId());
+    // tri des tomes par numéro de tome
+    $tomesArray = $manga->getTomes()->toArray();
+usort($tomesArray, fn($a, $b) => $a->getNumeroTome() <=> $b->getNumeroTome());
 
     // Récupère les tomes et leur stock
     $tomes = array_map(function($tome) {
@@ -110,7 +109,7 @@ public function show(
             'stock'       => $tome->getStock(),
             'prix'        => $tome->getPrix(),
         ];
-    }, $manga->getTomes()->toArray());
+    }, $tomesArray);
 
     return new JsonResponse([
         'id'          => $manga->getId(),
