@@ -2,14 +2,15 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ServUser, UserProfile } from '../../services/UserService';
-import { Router } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/AuthService';
+import { ServManga, Manga } from '../../services/MangaService';
 import { FavoriService } from '../../services/FavoriService';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.scss'
 })
@@ -36,6 +37,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private servUser: ServUser,
+    private mangaService: ServManga,
     private cdr: ChangeDetectorRef,
     public authService: AuthService,
     private router: Router,
@@ -113,7 +115,7 @@ chargerFavoris(): void {
 
   deconnexion(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+   this.router.navigate(['/login']);
   }
 
   enregistrer(): void {

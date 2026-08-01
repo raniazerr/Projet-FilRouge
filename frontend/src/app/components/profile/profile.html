@@ -93,7 +93,7 @@
     <p class="profile__vide" *ngIf="favoris.length === 0">Aucun favori pour le moment.</p>
 
     <div class="profile__favoris">
-      <div class="favori-card" *ngFor="let f of favoris">
+      <div class="favori-card" *ngFor="let f of favoris" [routerLink]="['/manga', f.manga.id]">
         <img [src]="f.manga.image" [alt]="f.manga.titre" class="favori-card__image">
         <span class="favori-card__titre">{{ f.manga.titre }}</span>
         <button class="btn-retirer" (click)="supprimerFavori(f.favoriId)">Retirer</button>
