@@ -80,16 +80,35 @@
             <th></th>
           </tr>
         </thead>
-        <tbody>
-          <tr *ngFor="let tome of tomes">
-            <td>{{ tome.numero_tome }}</td>
-            <td>{{ tome.prix }} €</td>
-            <td>{{ tome.stock }}</td>
-            <td>
-              <button class="btn-supprimer-tome" (click)="supprimerTome(tome)">Supprimer</button>
-            </td>
-          </tr>
-        </tbody>
+            <tbody>
+      <tr *ngFor="let tome of tomes">
+        <ng-container *ngIf="tomeEnEdition?.id !== tome.id; else editRow">
+          <td>{{ tome.numero_tome }}</td>
+          <td>{{ tome.prix }} €</td>
+          <td>{{ tome.stock }}</td>
+          <td>
+            <button class="btn-modifier-tome" (click)="demarrerEdition(tome)">Modifier</button>
+            <button class="btn-supprimer-tome" (click)="supprimerTome(tome)">Supprimer</button>
+          </td>
+        </ng-container>
+
+        <ng-template #editRow>
+          <td>{{ tome.numero_tome }}</td>
+          <td>
+            <input type="number" class="tome-form__input" [(ngModel)]="tomeEditData.prix" min="0" step="0.01">
+          </td>
+          <td>
+            <input type="number" class="tome-form__input" [(ngModel)]="tomeEditData.stock" min="0">
+          </td>
+          <td>
+            <button class="btn-valider-tome" [disabled]="isSavingEdit" (click)="enregistrerEdition()">
+              {{ isSavingEdit ? '...' : 'Valider' }}
+            </button>
+            <button class="btn-fermer" (click)="annulerEdition()">Annuler</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
       </table>
 
       <p class="admin__vide" *ngIf="!isLoadingTomes && tomes.length === 0">Aucun tome enregistré pour ce manga.</p>

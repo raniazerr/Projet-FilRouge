@@ -86,9 +86,9 @@ export class ServManga {
     return this.http.post<Tome>(`${this.apiUrl}/tome`, payload);
   }
 
-  modifierTome(id: number, payload: Partial<TomePayload>): Observable<Tome> {
-    return this.http.patch<Tome>(`${this.apiUrl}/tome/${id}`, payload);
-  }
+  modifierTome(id: number, data: { prix: number; stock: number }): Observable<Tome> {
+  return this.http.patch<Tome>(`${this.apiUrl}/tome/${id}`, data);
+}
 
   supprimerTome(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/tome/${id}`);

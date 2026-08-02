@@ -301,6 +301,54 @@
   }
 }
 
+.btn-modifier-tome {
+  background: white;
+  border: 2px solid #1565c0;
+  border-radius: 6px;
+  color: #1565c0;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 8px;
+
+  &:hover {
+    background: #1565c0;
+    color: white;
+  }
+}
+
+.btn-valider-tome {
+  background: #2e7d32;
+  border: 2px solid #2e7d32;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 8px;
+
+  &:hover {
+    background: #1b5e20;
+    border-color: #1b5e20;
+  }
+
+  &:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+  }
+}
+
+.tomes-table td .tome-form__input {
+  width: 80px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
 .tome-form {
   display: flex;
   gap: 12px;

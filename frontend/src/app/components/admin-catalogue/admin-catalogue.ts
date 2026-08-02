@@ -175,4 +175,44 @@ export class AdminCatalogueComponent implements OnInit {
       }
     });
   }
+
+  // Édition d'un tome existant
+tomeEnEdition: Tome | null = null;
+tomeEditData = { prix: 0, stock: 0 };
+isSavingEdit = false;
+
+demarrerEdition(tome: Tome): void {
+  this.tomeEnEdition = tome;
+  this.tomeEditData = { prix: tome.prix, stock: tome.stock };
+  this.tomeError = '';
+}
+
+annulerEdition(): void {
+  this.tomeEnEdition = null;
+}
+
+enregistrerEdition(): void {
+  if (!this.tomeEnEdition) return;
+
+  this.isSavingEdit = true;
+  this.tomeError = '';
+
+  this.servManga.modifierTome(this.tomeEnEdition.id, {
+    prix: this.tomeEditData.prix,
+    stock: this.tomeEditData.stock
+  }).subscribe({
+    next: (tomeMaj) => {
+      const index = this.tomes.findIndex(t => t.id === tomeMaj.id);
+      if (index !== -1) this.tomes[index] = tomeMaj;
+      this.tomeEnEdition = null;
+      this.isSavingEdit = false;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      this.tomeError = err.error?.error || 'Erreur lors de la modification du tome.';
+      this.isSavingEdit = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 }
