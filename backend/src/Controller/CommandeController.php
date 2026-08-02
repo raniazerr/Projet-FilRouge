@@ -37,7 +37,7 @@ class CommandeController extends AbstractController
         if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
         return new JsonResponse(['error' => 'Les administrateurs ne peuvent pas réserver de tomes'], Response::HTTP_FORBIDDEN);
     }
-    
+
         $data = json_decode($request->getContent(), true);
 
     $em->beginTransaction();
@@ -154,17 +154,24 @@ class CommandeController extends AbstractController
         return new JsonResponse($this->normalize($commande));
     }
     
+    //-----------ADMIN----------
 
-    // GET /api/commandes/admin — voir toutes les commandes (admin)
+    // GET /api/commandes/admin — voir toutes les commandes sans le panier
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin', methods: ['GET'])]
     public function adminIndex(CommandeRepository $repo): JsonResponse
     {
-        $commandes = $repo->findAll();
+        $commandes = $repo->createQueryBuilder('c')
+            ->where('c.statut != :panier')
+            ->setParameter('panier', 'en attente')
+            ->orderBy('c.date_commande', 'DESC')
+            ->getQuery()
+            ->getResult();
+
         return new JsonResponse(array_map([$this, 'normalize'], $commandes));
     }
 
-    // PATCH /api/commandes/admin/{id}/statut — confirmer ou expirer (admin)
+    // PATCH /api/commandes/admin/{id}/statut — confirmer ou expirer
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/admin/{id}/statut', methods: ['PATCH'])]
     public function adminUpdateStatut(Commande $commande, Request $request, EntityManagerInterface $em): JsonResponse
