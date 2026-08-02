@@ -102,6 +102,16 @@
     color: #666;
   }
 
+  &__quantite {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e63312;
+    background: #fdeceb;
+    padding: 3px 10px;
+    border-radius: 20px;
+    width: fit-content;
+  }
+
   // &__statut {
   //   font-size: 12px;
   //   font-weight: 600;

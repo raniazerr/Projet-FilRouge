@@ -29,6 +29,21 @@ export class PanierComponent implements OnInit {
     this.chargerPanier();
   }
 
+  get lignesPanier() {
+  if (!this.commande) return [];
+
+  const groupes = new Map<number, { tome: any; ids: number[] }>();
+
+  for (const r of this.commande.reservations) {
+    const tomeId = r.tome.id;
+    if (!groupes.has(tomeId)) {
+      groupes.set(tomeId, { tome: r.tome, ids: [] });
+    }
+    groupes.get(tomeId)!.ids.push(r.id);
+  }
+
+  return Array.from(groupes.values());
+}
   chargerPanier(): void {
     this.panierService.getCommandes().subscribe({
       next: (data) => {
@@ -45,7 +60,7 @@ export class PanierComponent implements OnInit {
     });
   }
 
-  supprimer(reservationId: number): void {
+  supprimerUnExemplaire(reservationId: number): void {
     this.panierService.supprimerReservation(reservationId).subscribe({
       next: () => {
         if (this.commande) {

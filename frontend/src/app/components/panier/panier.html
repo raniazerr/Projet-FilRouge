@@ -22,19 +22,20 @@
     </div>
 
   <div class="panier__liste" *ngIf="commande && commande.reservations.length > 0">
-      <div class="panier__item" *ngFor="let r of commande.reservations">
-        <img [src]="r.tome.manga_image" [alt]="r.tome.manga_titre" class="panier__image" />
-        <div class="panier__infos">
-          <span class="panier__manga-titre">{{ r.tome.manga_titre }}</span>
-          <span class="panier__tome">Tome {{ r.tome.numero_tome }}</span>
-        </div>
-        <div class="panier__prix-bloc">
-          <span class="panier__prix">{{ r.tome.prix | number:'1.2-2' }} €</span>
-          <button class="btn-supprimer" (click)="supprimer(r.id)">
-            🗑 Supprimer
-          </button>
-        </div>
+      <div class="panier__item" *ngFor="let ligne of lignesPanier">
+      <img [src]="ligne.tome.manga_image" [alt]="ligne.tome.manga_titre" class="panier__image" />
+      <div class="panier__infos">
+        <span class="panier__manga-titre">{{ ligne.tome.manga_titre }}</span>
+        <span class="panier__tome">Tome {{ ligne.tome.numero_tome }}</span>
+        <span class="panier__quantite" *ngIf="ligne.ids.length > 1">× {{ ligne.ids.length }}</span>
       </div>
+      <div class="panier__prix-bloc">
+        <span class="panier__prix">{{ (ligne.tome.prix * ligne.ids.length) | number:'1.2-2' }} €</span>
+        <button class="btn-supprimer" (click)="supprimerUnExemplaire(ligne.ids[ligne.ids.length - 1])">
+          🗑 Retirer un exemplaire
+        </button>
+      </div>
+    </div>
 
       <div class="panier__total">
         <span>Total</span>
