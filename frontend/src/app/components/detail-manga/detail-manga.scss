@@ -92,6 +92,12 @@
     color: var(--text-dark);
   }
 
+  &__tomes-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
   &__tomes-liste {
     display: flex;
     flex-wrap: wrap;
@@ -226,17 +232,49 @@
 }
 
 // Messages de succès ou d'erreur 
-.detail__message-succes {
-  color: #2e7d32;
+
+.detail__message-succes,
+.detail__message-erreur {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: toast-in 0.25s ease-out;
+  color: white;
+}
+
+.detail__message-succes {
+  background: #2e7d32;
 }
 
 .detail__message-erreur {
-  color: #c62828;
-  font-size: 14px;
-  font-weight: 600;
+  background: #c62828;
 }
+
+.toast__icone {
+  font-size: 16px;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
 
 // Tablette
 @media (max-width: 1024px) {

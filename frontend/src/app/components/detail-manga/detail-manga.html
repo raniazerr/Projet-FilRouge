@@ -29,10 +29,6 @@
       <button class="btn-favori" [class.actif]="estFavori" [disabled]="favoriEnCours || chargementFavori" (click)="toggleFavori()">
         {{ estFavori ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' }}
       </button>
-      <span class="detail__badge" *ngIf="tomeSelectionne"
-      [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
-      {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
-    </span>
   </div>
 
     <div class="detail__meta" *ngIf="manga.auteurs.length > 0">
@@ -48,6 +44,7 @@
 <!-- Sélecteur de tome -->
 <div class="detail__tomes" *ngIf="manga.tomes.length > 0">
   <label class="detail__tomes-label" for="tome-select">Tome</label>
+  <div class="detail__tomes-row">
   <select
     id="tome-select"
     class="tome-select"
@@ -62,6 +59,12 @@
       Tome {{ tome.numero_tome }}{{ tome.stock === 0 ? ' — Rupture' : '' }}
     </option>
   </select>
+
+  <span class="detail__badge" *ngIf="tomeSelectionne"
+      [class.en-stock]="estEnStock" [class.rupture]="!estEnStock">
+      {{ estEnStock ? 'Disponible' : 'Rupture de stock' }}
+    </span>
+</div>
 </div>
 
     <!-- Description -->
@@ -79,8 +82,14 @@
     </div>
 
     <!-- Messages -->
-  <div class="detail__message-succes" *ngIf="messageSuccess">✓ {{ messageSuccess }}</div>
-  <div class="detail__message-erreur" *ngIf="messageErreur">⚠️ {{ messageErreur }}</div>
+  <div class="detail__message-succes" *ngIf="messageSuccess">
+    <span class="toast__icone">✓</span>
+    <span>{{ messageSuccess }}</span>
+  </div>
+  <div class="detail__message-erreur" *ngIf="messageErreur">
+    <span class="toast__icone">⚠️</span>
+    <span>{{ messageErreur }}</span>
+  </div>
 
   </div>
 </div>
