@@ -25,6 +25,9 @@ class Manga
     #[ORM\Column(length: 500)]
     private ?string $image = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $volumes = null;
+
     /**
      * @var Collection<int, Tome>
      */
@@ -59,6 +62,9 @@ class Manga
 
     public function getImage(): ?string { return $this->image; }
     public function setImage(string $image): static { $this->image = $image; return $this; }
+
+    public function getVolumes(): ?int { return $this->volumes; }
+    public function setVolumes(?int $volumes): static { $this->volumes = $volumes; return $this;}
 
     public function getTomes(): Collection { return $this->tomes; }
 

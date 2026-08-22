@@ -87,6 +87,28 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     return new JsonResponse($this->normalizeManga($manga), 201);
 }
 
+#[Route('/resync-volumes', name: 'app_manga_resync_volumes', methods: ['POST'])]
+#[IsGranted('ROLE_ADMIN')]
+public function resyncVolumes(MangaRepository $mangaRepository, MangaApiService $api, EntityManagerInterface $entityManager): JsonResponse
+{
+    $mangas = $mangaRepository->findAll();
+    $misAJour = 0;
+
+    foreach ($mangas as $manga) {
+        $apiData = $api->getManga($manga->getApiId());
+        $volumes = $apiData['data']['volumes'] ?? null;
+
+        if ($volumes !== null) {
+            $manga->setVolumes($volumes);
+            $misAJour++;
+        }
+    }
+
+    $entityManager->flush();
+
+    return new JsonResponse(['message' => "$misAJour manga(s) mis à jour sur " . count($mangas)]);
+}
+
    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
 public function show(
     ?Manga $manga,
@@ -95,6 +117,7 @@ public function show(
     if (!$manga) {
         return new JsonResponse(['error' => 'Manga not found'], 404);
     }
+
 
     $apiData = $api->getManga($manga->getApiId());
     // tri des tomes par numéro de tome
@@ -171,4 +194,5 @@ usort($tomesArray, fn($a, $b) => $a->getNumeroTome() <=> $b->getNumeroTome());
             'genres' => $manga->getGenres() ?? [],
         ];
     }
+    
 }
