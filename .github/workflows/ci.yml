@@ -8,7 +8,7 @@ on:
 
 jobs:
   backend-tests:
-    name: Backend (Symfony / PHPUnit)
+    name: Backend (Symfony)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -51,7 +51,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
       - name: Create .env.test.local
         run: |
@@ -101,11 +101,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install   # TODO: repasser à `npm ci` une fois package-lock.json régénéré et commité
 
-      # Pas encore de tests unitaires configurés côté Angular (aucun *.spec.ts,
-      # aucun builder "test" dans angular.json). En attendant, on vérifie au moins
-      # que le projet compile. Dès que des specs existeront, remplacer par :
-      # npm test -- --watch=false --browsers=ChromeHeadless
       - name: Build (compile check)
         run: npm run build
