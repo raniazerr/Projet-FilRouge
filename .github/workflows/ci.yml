@@ -19,7 +19,6 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: mangarake_test_test
         ports:
           - 3306:3306
         options: >-
@@ -78,6 +77,9 @@ jobs:
             mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -proot --silent && break
             sleep 2
           done
+
+      - name: Create database
+        run: php bin/console doctrine:database:create --env=test --if-not-exists --no-interaction
 
       - name: Create database schema
         run: php bin/console doctrine:schema:create --env=test --no-interaction
