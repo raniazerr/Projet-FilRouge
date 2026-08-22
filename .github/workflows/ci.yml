@@ -19,7 +19,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: mangarake_test
+          MYSQL_DATABASE: mangarake_test_test
         ports:
           - 3306:3306
         options: >-
@@ -58,7 +58,7 @@ jobs:
          echo "APP_ENV=test" > .env
           echo "APP_SECRET=ci_secret" >> .env
           echo "DEFAULT_URI=http://localhost" >> .env
-          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/mangarake_test?serverVersion=8.0&charset=utf8mb4" >> .env
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/mangarake?serverVersion=8.0&charset=utf8mb4" >> .env
           echo "MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0" >> .env
           echo "MAILER_DSN=null://null" >> .env
           echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
