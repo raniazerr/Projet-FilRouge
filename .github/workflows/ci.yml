@@ -55,16 +55,16 @@ jobs:
 
       - name: Create .env.test.local
         run: |
-          echo "APP_ENV=test" >> .env.test.local
-          echo "APP_SECRET=ci_secret" >> .env.test.local
-          echo "DEFAULT_URI=http://localhost" >> .env.test.local
-          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/mangarake_test?serverVersion=8.0&charset=utf8mb4" >> .env.test.local
-          echo "MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0" >> .env.test.local
-          echo "MAILER_DSN=null://null" >> .env.test.local
-          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env.test.local
-          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env.test.local
-          echo "JWT_PASSPHRASE=ci_test_passphrase" >> .env.test.local
-          echo "CORS_ALLOW_ORIGIN=^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$" >> .env.test.local
+         echo "APP_ENV=test" > .env
+          echo "APP_SECRET=ci_secret" >> .env
+          echo "DEFAULT_URI=http://localhost" >> .env
+          echo "DATABASE_URL=mysql://root:root@127.0.0.1:3306/mangarake_test?serverVersion=8.0&charset=utf8mb4" >> .env
+          echo "MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0" >> .env
+          echo "MAILER_DSN=null://null" >> .env
+          echo "JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem" >> .env
+          echo "JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem" >> .env
+          echo "JWT_PASSPHRASE=ci_test_passphrase" >> .env
+          echo "CORS_ALLOW_ORIGIN=^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$" >> .env
 
       - name: Generate JWT keys
         run: |
