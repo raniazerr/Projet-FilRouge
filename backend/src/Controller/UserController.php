@@ -16,10 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-    // Contrôleur de gestion des utilisateurs côté administrateur.
-    // Il permet de lister, créer ou modifier des comptes utilisateurs.
 
     #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(UserRepository $userRepository): JsonResponse
     {
         $users = array_map([$this, 'normalizeUser'], $userRepository->findAll());
@@ -28,6 +27,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function create(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
@@ -53,7 +53,21 @@ final class UserController extends AbstractController
         return new JsonResponse($this->normalizeUser($user), Response::HTTP_CREATED);
     }
 
+    #[Route('/me', name: 'app_user_delete_self', methods: ['DELETE'])]
+    #[IsGranted('IS_AUTHENTICATED_FULLY')]
+    public function deleteSelf(EntityManagerInterface $entityManager): JsonResponse
+    {
+        $user = $this->getUser();
+
+        
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(?User $user): JsonResponse
     {
         if (!$user) {
@@ -89,7 +103,7 @@ final class UserController extends AbstractController
             $user->setRoles($data['roles']);
         }
         if (isset($data['password'])) {
-            $user->setPassword((string) $data['password']);
+            $user->setPassword($passwordHasher->hashPassword($user, (string) $data['password']));
         }
 
         $entityManager->flush();
@@ -98,6 +112,7 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(?User $user, EntityManagerInterface $entityManager): JsonResponse
     {
         if (!$user) {
