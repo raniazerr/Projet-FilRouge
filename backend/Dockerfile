@@ -24,6 +24,7 @@ WORKDIR /var/www/html
 
 COPY --from=vendor /app/vendor ./vendor
 COPY . .
+RUN touch .env
 
 RUN chown -R www-data:www-data /var/www/html/var
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

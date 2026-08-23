@@ -8,6 +8,6 @@ if [ ! -f config/jwt/private.pem ]; then
     chown www-data:www-data config/jwt/*.pem
 fi
 
-php bin/console doctrine:migrations:migrate --no-interaction || true
+php bin/console doctrine:schema:update --force --no-interaction
 
 exec "$@"
