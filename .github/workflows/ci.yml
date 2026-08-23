@@ -103,7 +103,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm install   # TODO: repasser à `npm ci` une fois package-lock.json régénéré et commité
+        run: npm install   
 
       - name: Build (compile check)
         run: npm run build
