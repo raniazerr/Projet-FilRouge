@@ -52,6 +52,9 @@ jobs:
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
+      - name: Audit des dépendances (composer audit)
+        run: composer audit
+
       - name: Create .env.test.local
         run: |
          echo "APP_ENV=test" > .env
@@ -83,6 +86,9 @@ jobs:
 
       - name: Create database schema
         run: php bin/console doctrine:schema:create --env=test --no-interaction
+
+      - name: Run PHPUnit tests
+        run: php bin/phpunit
 
   frontend-build:
     name: Frontend (Angular)
