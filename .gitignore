@@ -1,5 +1,5 @@
 # Backend
-backend/vendor/
+vendor/
 backend/var/
 backend/.env.local
 backend/.env.local.php
