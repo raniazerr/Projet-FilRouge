@@ -66,22 +66,27 @@ export class MangaDetailComponent implements OnInit {
       return;
     }
 
-    this.mangaService.getMangaById(+id).subscribe({
-      next: (data: MangaDetail) => {
-        this.manga = data;
-        // Sélectionne le premier tome disponible par défaut
-        this.tomeSelectionne = null;
-        this.chargement = false;
-        this.verifierFavori();
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.erreur = true;
-        this.chargement = false;
-        this.cdr.detectChanges();
-      }
-    });
+this.mangaService.getMangaById(+id).subscribe({
+  next: (data: MangaDetail) => {
+    this.manga = data;
+    this.tomeSelectionne = null;
+    this.chargement = false;
+
+    if (this.authService.isConnecte()) {
+      this.verifierFavori();
+    } else {
+      this.chargementFavori = false;
+    }
+
+    this.cdr.detectChanges();
+  },
+  error: () => {
+    this.erreur = true;
+    this.chargement = false;
+    this.cdr.detectChanges();
   }
+});
+}
 
 chargementFavori = true;
 
