@@ -150,4 +150,20 @@ chargerFavoris(): void {
       }
     });
   }
+
+  supprimerCompte(): void {
+  if (!confirm('Supprimer définitivement votre compte ? Cette action est irréversible.')) {
+    return;
+  }
+  this.servUser.deleteAccount().subscribe({
+    next: () => {
+      this.authService.logout();
+      this.router.navigate(['/']);
+    },
+    error: () => {
+      this.errorMessage = 'Impossible de supprimer le compte.';
+      this.cdr.detectChanges();
+    }
+  });
+}
 } 

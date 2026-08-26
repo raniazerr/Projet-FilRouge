@@ -81,6 +81,12 @@
         </form>
       </div>
 
+      <div class="profile-form__danger-zone">
+        <button class="btn-supprimer-compte" type="button" (click)="supprimerCompte()">
+          Supprimer mon compte
+        </button>
+      </div>
+
 <!-- Carte favoris -->
 <div class="profile__card" *ngIf="!authService.isAdmin()">
   <h3 class="profile__card-titre">Mes favoris</h3>

@@ -183,8 +183,8 @@
 }
 
 .btn-enregistrer {
-  background: #e63312;
-  border: 2px solid #e63312;
+  background: #2e7d32;
+  border: 2px solid #2e7d32;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -194,8 +194,8 @@
   transition: all 0.2s;
 
   &:hover {
-    background: #c62828;
-    border-color: #c62828;
+    background: #1b5e20;
+    border-color: #1b5e20;
   }
 
   &:disabled {
@@ -278,6 +278,29 @@
   &:hover {
     background: #c62828;
     color: white;
+  }
+}
+
+.profile-form__danger-zone {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.btn-supprimer-compte {
+  background: white;
+  border: 2px solid #c62828;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c62828;
+  cursor: pointer;
+  padding: 8px 20px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c62828;
+    color: white;
+    border-color: #c62828;
   }
 }
 

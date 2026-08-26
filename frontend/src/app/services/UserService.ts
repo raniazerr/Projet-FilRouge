@@ -38,4 +38,9 @@ export class ServUser {
   getHistoriqueCommandes(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/commandes/historique`);
   }
+
+  deleteAccount(): Observable<void> {
+  return this.http.delete<void>('http://localhost:8000/user/me');
+}
+
 }
