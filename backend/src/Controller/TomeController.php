@@ -62,9 +62,19 @@ final class TomeController extends AbstractController
         }
 
         $numeroTome = (int) $data['numero_tome'];
+        $stock = (int) ($data['stock'] ?? 0);
+        $prix = (float) ($data['prix'] ?? 0.0);
 
         if ($numeroTome <= 0) {
             return new JsonResponse(['error' => 'Le numéro de tome doit être supérieur à 0'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($stock < 0) {
+            return new JsonResponse(['error' => 'Le stock ne peut pas être négatif'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($prix < 0) {
+            return new JsonResponse(['error' => 'Le prix ne peut pas être négatif'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($manga->getVolumes() !== null && $numeroTome > $manga->getVolumes()) {
@@ -76,8 +86,8 @@ final class TomeController extends AbstractController
         $tome = new Tome();
         $tome->setManga($manga);
         $tome->setNumeroTome($numeroTome);
-        $tome->setStock((int) ($data['stock'] ?? 0));
-        $tome->setPrix((float) ($data['prix'] ?? 0.0));
+        $tome->setStock($stock);
+        $tome->setPrix($prix);
 
         $entityManager->persist($tome);
         $entityManager->flush();
@@ -117,8 +127,26 @@ final class TomeController extends AbstractController
             $tome->setNumeroTome($numeroTome);
         }
 
-        if (isset($data['stock']))       $tome->setStock((int) $data['stock']);
-        if (isset($data['prix']))        $tome->setPrix((float) $data['prix']);
+
+        if (isset($data['stock'])) {
+        $stock = (int) $data['stock'];
+
+        if ($stock < 0) {
+            return new JsonResponse(['error' => 'Le stock ne peut pas être négatif'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $tome->setStock($stock);
+    }
+
+        if (isset($data['prix'])) {
+            $prix = (float) $data['prix'];
+
+            if ($prix < 0) {
+                return new JsonResponse(['error' => 'Le prix ne peut pas être négatif'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $tome->setPrix($prix);
+        }
 
         $entityManager->flush();
 
