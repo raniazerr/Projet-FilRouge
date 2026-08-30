@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Manga;
 use App\Repository\MangaRepository;
+use App\Service\DeepLTranslatorService;
 use App\Service\MangaApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -60,7 +61,7 @@ public function search(Request $request, MangaApiService $api): JsonResponse
 
     #[Route('/new', name: 'app_manga_new', methods: ['POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api): JsonResponse 
+    public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api, DeepLTranslatorService $translator): JsonResponse 
     {
     $data = json_decode($request->getContent(), true);
     // $response = $api->getManga((int)$data['api_id']);
@@ -78,7 +79,7 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     $manga->setApiId($apiData['mal_id']);
     $manga->setTitre($apiData['title']);
     $manga->setImage($apiData['images']['jpg']['image_url']);
-    $manga->setSynopsis($apiData['synopsis']);
+    $manga->setSynopsis($translator->translate($apiData['synopsis'] ?? ''));
     $manga->setGenres(array_map(fn($g) => $g['name'], $apiData['genres'] ?? []));
 
     $entityManager->persist($manga);
@@ -110,13 +111,13 @@ public function resyncVolumes(MangaRepository $mangaRepository, MangaApiService 
 }
 
    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
-public function show(
-    ?Manga $manga,
-    MangaApiService $api
-): JsonResponse {
-    if (!$manga) {
-        return new JsonResponse(['error' => 'Manga not found'], 404);
-    }
+    public function show(
+        ?Manga $manga,
+        MangaApiService $api
+    ): JsonResponse {
+        if (!$manga) {
+            return new JsonResponse(['error' => 'Manga not found'], 404);
+        }
 
 
     $apiData = $api->getManga($manga->getApiId());
@@ -138,12 +139,12 @@ usort($tomesArray, fn($a, $b) => $a->getNumeroTome() <=> $b->getNumeroTome());
         'id'          => $manga->getId(),
         'api_id'      => $manga->getApiId(),
         'titre'       => $apiData['data']['title'] ?? $manga->getTitre(),
-        'description' => $apiData['data']['synopsis'] ?? null,
+        'description' => $manga->getSynopsis(),
         'image'       => $apiData['data']['images']['jpg']['image_url'] ?? $manga->getImage(),
         'auteurs'     => array_map(fn($a) => $a['name'], $apiData['data']['authors'] ?? []),
         'volumes'     => $apiData['data']['volumes'] ?? null,
-        'statut'      => $apiData['data']['status'] ?? null,
-        'tomes'       => $tomes, // ← liste des tomes en stock
+        'statut'      => $this->traduireStatut($apiData['data']['status'] ?? null),
+        'tomes'       => $tomes, 
     ]);
 }
 
@@ -193,6 +194,17 @@ usort($tomesArray, fn($a, $b) => $a->getNumeroTome() <=> $b->getNumeroTome());
             'synopsis' => $manga->getSynopsis(), 
             'genres' => $manga->getGenres() ?? [],
         ];
+    }
+
+    private function traduireStatut(?string $statut): ?string
+    {
+        return match($statut) {
+            'Finished' => 'Terminé',
+            'Publishing' => 'En cours',
+            'On Hiatus' => 'En pause',
+            'Discontinued' => 'Abandonné',
+            default => $statut,
+        };
     }
     
 }
