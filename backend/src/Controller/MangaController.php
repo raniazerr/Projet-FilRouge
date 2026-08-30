@@ -64,10 +64,7 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     public function create(Request $request, EntityManagerInterface $entityManager, MangaApiService $api, DeepLTranslatorService $translator): JsonResponse 
     {
     $data = json_decode($request->getContent(), true);
-    // $response = $api->getManga((int)$data['api_id']);
-    // var_dump($response);
-    // die();
-
+    
 
     if (!isset($data['api_id'])) {
         return new JsonResponse(['error' => 'api_id required'], 400);
@@ -80,6 +77,7 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     $manga->setTitre($apiData['title']);
     $manga->setImage($apiData['images']['jpg']['image_url']);
     $manga->setSynopsis($translator->translate($apiData['synopsis'] ?? ''));
+    $manga->setVolumes($apiData['volumes'] ?? null);
     $manga->setGenres(array_map(fn($g) => $g['name'], $apiData['genres'] ?? []));
 
     $entityManager->persist($manga);
@@ -88,27 +86,6 @@ public function search(Request $request, MangaApiService $api): JsonResponse
     return new JsonResponse($this->normalizeManga($manga), 201);
 }
 
-#[Route('/resync-volumes', name: 'app_manga_resync_volumes', methods: ['POST'])]
-#[IsGranted('ROLE_ADMIN')]
-public function resyncVolumes(MangaRepository $mangaRepository, MangaApiService $api, EntityManagerInterface $entityManager): JsonResponse
-{
-    $mangas = $mangaRepository->findAll();
-    $misAJour = 0;
-
-    foreach ($mangas as $manga) {
-        $apiData = $api->getManga($manga->getApiId());
-        $volumes = $apiData['data']['volumes'] ?? null;
-
-        if ($volumes !== null) {
-            $manga->setVolumes($volumes);
-            $misAJour++;
-        }
-    }
-
-    $entityManager->flush();
-
-    return new JsonResponse(['message' => "$misAJour manga(s) mis à jour sur " . count($mangas)]);
-}
 
    #[Route('/{id}', name: 'app_manga_show', methods: ['GET'])]
     public function show(
