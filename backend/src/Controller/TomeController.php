@@ -61,9 +61,21 @@ final class TomeController extends AbstractController
             return new JsonResponse(['error' => 'Le champ numero_tome est requis'], Response::HTTP_BAD_REQUEST);
         }
 
+        $numeroTome = (int) $data['numero_tome'];
+
+        if ($numeroTome <= 0) {
+            return new JsonResponse(['error' => 'Le numéro de tome doit être supérieur à 0'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($manga->getVolumes() !== null && $numeroTome > $manga->getVolumes()) {
+            return new JsonResponse([
+                'error' => sprintf('Le tome %d n\'existe pas : ce manga compte %d tome(s) au total', $numeroTome, $manga->getVolumes())
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         $tome = new Tome();
         $tome->setManga($manga);
-        $tome->setNumeroTome((int) $data['numero_tome']);
+        $tome->setNumeroTome($numeroTome);
         $tome->setStock((int) ($data['stock'] ?? 0));
         $tome->setPrix((float) ($data['prix'] ?? 0.0));
 
@@ -87,7 +99,24 @@ final class TomeController extends AbstractController
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($data['numero_tome'])) $tome->setNumeroTome((int) $data['numero_tome']);
+        if (isset($data['numero_tome'])) {
+            $numeroTome = (int) $data['numero_tome'];
+
+            if ($numeroTome <= 0) {
+                return new JsonResponse(['error' => 'Le numéro de tome doit être supérieur à 0'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $volumesManga = $tome->getManga()?->getVolumes();
+
+            if ($volumesManga !== null && $numeroTome > $volumesManga) {
+                return new JsonResponse([
+                    'error' => sprintf('Le tome %d n\'existe pas : ce manga compte %d tome(s) au total', $numeroTome, $volumesManga)
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $tome->setNumeroTome($numeroTome);
+        }
+
         if (isset($data['stock']))       $tome->setStock((int) $data['stock']);
         if (isset($data['prix']))        $tome->setPrix((float) $data['prix']);
 
