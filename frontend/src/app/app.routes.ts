@@ -11,6 +11,7 @@ import { AdminReservationsComponent } from './components/admin-reservations/admi
 import { AdminCatalogueComponent } from './components/admin-catalogue/admin-catalogue';
 import { MentionsLegalesComponent } from './components/mentions-legales/mentions-legales';
 import { PolitiqueConfidentialiteComponent } from './components/politique-confidentialite/politique-confidentialite';
+import { NotFoundComponent } from './components/not-found/not-found';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -23,4 +24,5 @@ export const routes: Routes = [
     { path: 'admin/catalogue', component: AdminCatalogueComponent, canActivate: [adminGuard] },
     { path: 'mentions-legales', component: MentionsLegalesComponent },
     { path: 'politique-confidentialite', component: PolitiqueConfidentialiteComponent },
+    { path: '**', component: NotFoundComponent }
 ];
