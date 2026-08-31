@@ -96,10 +96,12 @@
   display: flex;
   gap: 10px;
   margin-bottom: 16px;
+  flex-wrap: wrap; 
 }
 
 .recherche-input {
   flex: 1;
+  min-width: 0;
   border: 2px solid #eee;
   border-radius: 8px;
   padding: 10px 14px;
@@ -122,6 +124,8 @@
   padding: 10px 24px;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;   
+  flex-shrink: 0;         
 
   &:hover {
     background: #c62828;
@@ -133,6 +137,7 @@
     border-color: #ccc;
     cursor: not-allowed;
   }
+
 }
 
 .resultats-grid {

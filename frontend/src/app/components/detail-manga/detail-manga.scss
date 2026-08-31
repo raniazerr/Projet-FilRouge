@@ -177,6 +177,7 @@
 // Select tome
 .tome-select {
   width: 25%;
+  min-width: 170px;
   text-overflow: clip;
   padding: 0.6rem 2rem 0.6rem 1rem;
   border: 2px solid var(--gris-secondaire);
