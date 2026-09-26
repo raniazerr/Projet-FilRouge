@@ -1,5 +1,6 @@
 name: CI
 
+# Déclenche ce fichier automatiquement dans ces 2 cas :
 on:
   push:
     branches: [ main, dev ]
@@ -7,6 +8,8 @@ on:
     branches: [ main, dev ]
 
 jobs:
+
+# JOB 1 : vérifie que le backend (Symfony) fonctionne
   backend-tests:
     name: Backend (Symfony)
     runs-on: ubuntu-latest
@@ -14,6 +17,7 @@ jobs:
       run:
         working-directory: backend
 
+# allume une base de données MySQL temporaire
     services:
       mysql:
         image: mysql:8.0
@@ -28,9 +32,11 @@ jobs:
           --health-retries=5
 
     steps:
+    # Étape 1 : télécharge le code source sur la machine de test
       - name: Checkout code
         uses: actions/checkout@v5
 
+    # Étape 2 : installe PHP sur cette machine vide
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -38,6 +44,7 @@ jobs:
           extensions: ctype, iconv, pdo_mysql, mbstring
           coverage: none
 
+    # Étape 3 : prépare un "cache" pour ne pas retélécharger les dépendances à chaque fois
       - name: Get composer cache directory
         id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
@@ -49,12 +56,15 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('backend/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+    # Étape 4 : installe toutes les librairies PHP du projet (Symfony, Doctrine, etc..)
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
 
+    # Étape 5 : vérification sécurité n°1 — check des dépendances
       - name: Audit des dépendances (composer audit)
         run: composer audit
 
+    # Étape 6 : crée un fichier .env avec des valeurs fictives
       - name: Create .env.test.local
         run: |
          echo "APP_ENV=test" > .env
@@ -68,12 +78,14 @@ jobs:
           echo "JWT_PASSPHRASE=ci_test_passphrase" >> .env
           echo "CORS_ALLOW_ORIGIN=^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$" >> .env
 
+    # Étape 7 : génère une paire de clés secrètes pour l'authentification JWT 
       - name: Generate JWT keys
         run: |
           mkdir -p config/jwt
           openssl genrsa -aes256 -passout pass:ci_test_passphrase -out config/jwt/private.pem 4096
           openssl rsa -in config/jwt/private.pem -passin pass:ci_test_passphrase -pubout -out config/jwt/public.pem
 
+    # Étape 8 : attends une réponse de la base MySQL temporaire
       - name: Wait for MySQL
         run: |
           for i in $(seq 1 30); do
@@ -81,15 +93,19 @@ jobs:
             sleep 2
           done
 
+    # Étape 9 : crée la base de données vide
       - name: Create database
         run: php bin/console doctrine:database:create --env=test --if-not-exists --no-interaction
 
+    # Étape 10 : crée les tables de la base de données
       - name: Create database schema
         run: php bin/console doctrine:schema:create --env=test --no-interaction
 
+    # Étape 11 : lance les tests unitaires et fonctionnels
       - name: Run PHPUnit tests
         run: php bin/phpunit
 
+# JOB 2 : vérifie que le frontend (Angular) compile sans erreur
   frontend-build:
     name: Frontend (Angular)
     runs-on: ubuntu-latest
@@ -98,9 +114,12 @@ jobs:
         working-directory: frontend
 
     steps:
+
+    # Étape 1 : télécharge le code source sur la machine de test
       - name: Checkout code
         uses: actions/checkout@v5
 
+    # Étape 2 : installe Node.js sur la machine vide
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -108,8 +127,34 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
+    # Étape 3 : installe les librairies JavaScript du projet
       - name: Install dependencies
         run: npm install   
 
+    # Étape 4 : vérifie que le code Angular compile sans erreur
       - name: Build (compile check)
         run: npm run build
+
+# JOB 3 : vérification sécurité n°2 — analyse du code source (SAST)
+sast-scan:
+    name: SAST (CodeQL)
+    runs-on: ubuntu-latest
+  # Autorisations nécessaires pour que CodeQL puisse publier ses résultats dans l'onglet "Security" de GitHub
+    permissions:
+      security-events: write
+      contents: read
+
+    # Étape 1 : télécharge le code source sur la machine de test
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+    # Étape 2 : prépare l'outil CodeQL et lui dit quels langages analyser
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, php
+
+    # Étape 3 : lance l'analyse du code
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
