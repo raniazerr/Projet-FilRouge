@@ -158,3 +158,19 @@ jobs:
       # Étape 3 : lance l'analyse du code
         - name: Perform CodeQL Analysis
           uses: github/codeql-action/analyze@v3
+          
+# JOB 4 : vérification sécurité n°3 — analyse du code source PHP (SAST)
+  sast-scan-php:
+      name: SAST Backend (Semgrep)
+      runs-on: ubuntu-latest
+
+      # Étape 1 : télécharge le code source sur la machine de test
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v5
+
+      # Étape 2 : lance Semgrep avec un jeu de règles de sécurité générique
+        - name: Run Semgrep
+          uses: semgrep/semgrep-action@v1
+          with:
+            config: p/security-audit
