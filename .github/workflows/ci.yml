@@ -153,12 +153,12 @@ jobs:
         - name: Initialize CodeQL
           uses: github/codeql-action/init@v3
           with:
-            languages: javascript, php
+            languages: javascript
 
       # Étape 3 : lance l'analyse du code
         - name: Perform CodeQL Analysis
           uses: github/codeql-action/analyze@v3
-          
+
 # JOB 4 : vérification sécurité n°3 — analyse du code source PHP (SAST)
   sast-scan-php:
       name: SAST Backend (Semgrep)
