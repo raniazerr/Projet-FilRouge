@@ -136,25 +136,25 @@ jobs:
         run: npm run build
 
 # JOB 3 : vérification sécurité n°2 — analyse du code source (SAST)
-sast-scan:
-    name: SAST (CodeQL)
-    runs-on: ubuntu-latest
-  # Autorisations nécessaires pour que CodeQL puisse publier ses résultats dans l'onglet "Security" de GitHub
-    permissions:
-      security-events: write
-      contents: read
+  sast-scan:
+      name: SAST (CodeQL)
+      runs-on: ubuntu-latest
+    # Autorisations nécessaires pour que CodeQL puisse publier ses résultats dans l'onglet "Security" de GitHub
+      permissions:
+        security-events: write
+        contents: read
 
-    # Étape 1 : télécharge le code source sur la machine de test
+      # Étape 1 : télécharge le code source sur la machine de test
       steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+        - name: Checkout code
+          uses: actions/checkout@v5
 
-    # Étape 2 : prépare l'outil CodeQL et lui dit quels langages analyser
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript, php
+      # Étape 2 : prépare l'outil CodeQL et lui dit quels langages analyser
+        - name: Initialize CodeQL
+          uses: github/codeql-action/init@v3
+          with:
+            languages: javascript, php
 
-    # Étape 3 : lance l'analyse du code
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+      # Étape 3 : lance l'analyse du code
+        - name: Perform CodeQL Analysis
+          uses: github/codeql-action/analyze@v3
