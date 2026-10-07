@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CommandeAdmin {
   id: number;
@@ -20,7 +21,7 @@ export interface CommandeAdmin {
 export class ServAdmin {
   // Service réservé à l'administration.
   // Il permet de récupérer toutes les commandes et de changer leur statut.
-  private apiUrl = 'http://localhost:8000/api';
+    private apiUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 

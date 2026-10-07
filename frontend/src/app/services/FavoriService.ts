@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Favori {
   id: number;
@@ -12,7 +13,7 @@ export interface Favori {
 export class FavoriService {
   // Service de gestion des favoris utilisateur.
   // Il centralise les requêtes pour ajouter, lister et supprimer des favoris.
-  private apiUrl = 'http://localhost:8000/api/favori';
+    private apiUrl = `${environment.apiUrl}/api/favori`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ReservationItem {
   id: number;
@@ -33,7 +34,7 @@ export class PanierService {
   // Service chargé de gérer les commandes et les réservations.
   // Il permet d'ajouter un tome au panier, de le retirer, d'annuler
   // une commande ou de la soumettre côté API.
-  private apiUrl = 'http://localhost:8000/api/commandes';
+  private apiUrl = `${environment.apiUrl}/api/commandes`;
 
   constructor(private http: HttpClient) {}
 

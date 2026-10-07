@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Manga {
   id: number;
@@ -48,7 +49,7 @@ export class ServManga {
   // Service central pour la gestion des mangas côté front-end.
   // Il centralise les appels HTTP vers l'API Symfony pour afficher,
   // rechercher, ajouter ou gérer les tomes d'un manga.
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
