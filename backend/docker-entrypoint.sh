@@ -10,6 +10,6 @@ fi
 
 php bin/console doctrine:schema:update --force --no-interaction
 
-chown -R www-data:www-data var
+RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
 
 exec "$@"
