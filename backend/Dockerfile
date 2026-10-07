@@ -9,6 +9,7 @@ FROM php:8.4-apache
 
 # Extensions PHP nécessaires (doctrine/orm -> pdo_mysql, symfony/intl -> intl, opcache pour les perfs)
 RUN apt-get update && apt-get install -y \
+        ca-certificates \
         libicu-dev \
         libzip-dev \
         unzip \

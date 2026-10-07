@@ -10,4 +10,6 @@ fi
 
 php bin/console doctrine:schema:update --force --no-interaction
 
+chown -R www-data:www-data var
+
 exec "$@"
