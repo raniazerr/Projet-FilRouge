@@ -33,7 +33,7 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 RUN touch .env
 
-RUN chown -R www-data:www-data /var/www/html/var
+RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
