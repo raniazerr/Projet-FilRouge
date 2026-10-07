@@ -37,7 +37,7 @@ when@prod:
     doctrine:
         dbal:
             options:
-                !php/const:PDO::MYSQL_ATTR_SSL_CA: '/etc/ssl/certs/ca-certificates.crt'
+                1009: '/etc/ssl/certs/ca-certificates.crt'
         orm:
             auto_generate_proxy_classes: false
             proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
