@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface UserProfile {
   id: number;
@@ -23,7 +24,7 @@ export interface UpdateProfilePayload {
 export class ServUser {
   // Service dédié à la gestion du profil utilisateur.
   // Il permet de récupérer les informations du compte et de les modifier.
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
@@ -40,7 +41,7 @@ export class ServUser {
   }
 
   deleteAccount(): Observable<void> {
-  return this.http.delete<void>('http://localhost:8000/user/me');
+    return this.http.delete<void>(`${environment.apiUrl}/user/me`);
 }
 
 }

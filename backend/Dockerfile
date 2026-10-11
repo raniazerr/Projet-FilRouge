@@ -9,6 +9,7 @@ FROM php:8.4-apache
 
 # Extensions PHP nécessaires (doctrine/orm -> pdo_mysql, symfony/intl -> intl, opcache pour les perfs)
 RUN apt-get update && apt-get install -y \
+        ca-certificates \
         libicu-dev \
         libzip-dev \
         unzip \
@@ -32,7 +33,7 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 RUN touch .env
 
-RUN chown -R www-data:www-data /var/www/html/var
+RUN mkdir -p var/cache var/log && chown -R www-data:www-data var
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 

@@ -10,5 +10,4 @@ import { RouterModule } from '@angular/router';
   styleUrl: './politique-confidentialite.scss',
 })
 export class PolitiqueConfidentialiteComponent {
-  derniereMiseAJour = '31 août 2026';
 }
