@@ -2,6 +2,8 @@
 
 Application de gestion et de réservation de mangas en boutique physique, permettant aux clients de parcourir un catalogue, réserver des tomes disponibles et suivre leurs commandes, et à un administrateur de gérer le catalogue et les commandes.
 
+🌍 **Démo en ligne** : https://mangarake.vercel.app (le premier chargement peut prendre une cinquantaine de secondes)
+
 ## 📋 Description
 
 Mangarake est une application web full-stack développée dans le cadre du Bachelor Concepteur Développeur d'Applications (CDA) à l'IPSSI.
@@ -18,12 +20,12 @@ L'application permet de :
 Stack technique :
 
 - 🔵 **Back-end** : Symfony (PHP) — API REST
-- 🔴 **Front-end** : Angular (TypeScript) — SPA, servie en production via Nginx
-- 🟢 **Base de données** : MySQL, via Doctrine ORM
+- 🔴 **Front-end** : Angular (TypeScript) — SPA, hébergée sur Vercel en production
+- 🟢 **Base de données** : MySQL via Doctrine ORM en local, TiDB Cloud (compatible MySQL) en production
 - 🔐 **Authentification** : JWT (LexikJWTAuthenticationBundle)
 - 📖 **Données mangas** : API Tenrai (MyAnimeList)
 - 🌍 **Traduction** : API DeepL (traduction des synopsis)
-- 🐳 **Déploiement** : Docker
+- 🐳 **Déploiement** : Docker en local, Render (back-end), Vercel (front-end), TiDB Cloud (base de données)
 - ⚙️ **CI** : GitHub Actions (tests backend, build frontend, analyse statique CodeQL + Semgrep)
 
 ## 🚀 Installation et lancement
@@ -65,6 +67,8 @@ Au premier démarrage, les images sont construites automatiquement, les clés JW
 |---|---|
 | 🌐 Application Angular | http://localhost:4200 |
 | 🔧 API Symfony | http://localhost:8000 |
+
+> ⚠️ Le conteneur front servi par Nginx est compilé en mode production : il appelle l'API déployée sur Render, et non le back local. Pour développer avec le back local, lancer le front avec `ng serve` (port 4200) depuis le dossier `frontend`.
 
 ### 🔄 Lancer l'application après le premier build
 
@@ -127,6 +131,7 @@ Projet-FilRouge/
    ```sql
    UPDATE user SET roles = '["ROLE_ADMIN"]' WHERE email = 'email@exemple.com';
    ```
+> En production, la même requête se lance depuis le *SQL Editor* de TiDB Cloud.
 
 ## ✅ Lancer les tests unitaires
 
@@ -185,12 +190,28 @@ docker compose exec backend php bin/phpunit
 - Validation systématique des entrées utilisateur côté contrôleurs
 - Audit automatique des dépendances (`composer audit`) et analyse statique du code (CodeQL, Semgrep) à chaque exécution de la CI
 
+## 🌍 Déploiement en production
+
+L'application est déployée et accessible en ligne :
+
+| Composant | Hébergeur | URL |
+|---|---|---|
+| 🌐 Front-end Angular | Vercel | https://mangarake.vercel.app |
+| 🔧 API Symfony | Render (Docker, région Francfort) | https://mangarake.onrender.com |
+| 🗄️ Base de données | TiDB Cloud (région Francfort, connexion TLS) | — |
+
+Le déploiement est continu : un push sur `main` redéploie automatiquement le back-end (Render) et le front-end (Vercel).
+
+> ℹ️ Le plan gratuit de Render met l'API en veille après une période d'inactivité : le premier chargement peut prendre une cinquantaine de secondes.
+
 ## 🔑 Variables d'environnement requises
 
 | Variable | Description |
 |---|---|
 | `JWT_PASSPHRASE` | Passphrase pour les clés JWT |
 | `DEEPL_API_KEY` | Clé API DeepL pour la traduction des synopsis |
+
+En production, les variables suivantes sont également définies dans le tableau de bord de Render : `APP_ENV`, `APP_SECRET`, `DATABASE_URL`.
 
 ## 👤 Auteur
 
