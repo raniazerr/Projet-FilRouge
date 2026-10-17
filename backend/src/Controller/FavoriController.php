@@ -5,15 +5,16 @@ namespace App\Controller;
 use App\Entity\Favori;
 use App\Repository\FavoriRepository;
 use App\Repository\MangaRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/favori')]
+#[IsGranted('IS_AUTHENTICATED_FULLY')]
 final class FavoriController extends AbstractController
 {
     // Contrôleur de gestion des favoris.
@@ -22,7 +23,7 @@ final class FavoriController extends AbstractController
     #[Route(name: 'app_favori_index', methods: ['GET'])]
     public function index(FavoriRepository $favoriRepository): JsonResponse
     {
-        $favoris = array_map([$this, 'normalizeFavori'], $favoriRepository->findAll());
+        $favoris = array_map([$this, 'normalizeFavori'], $favoriRepository->findBy(['utilisateur' => $this->getUser()]));
 
         return new JsonResponse($favoris);
     }
@@ -46,17 +47,14 @@ final class FavoriController extends AbstractController
     }
 
     #[Route('/new', name: 'app_favori_new', methods: ['POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, MangaRepository $mangaRepository): JsonResponse
+    public function create(Request $request, EntityManagerInterface $entityManager, MangaRepository $mangaRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         if (!is_array($data)) {
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        $user = $userRepository->find($data['utilisateur'] ?? null);
-        if (!$user) {
-            return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
-        }
+        $user = $this->getUser();
 
         $manga = $mangaRepository->find($data['manga'] ?? null);
         if (!$manga) {
@@ -76,7 +74,7 @@ final class FavoriController extends AbstractController
     #[Route('/{id}', name: 'app_favori_show', methods: ['GET'])]
     public function show(?Favori $favori): JsonResponse
     {
-        if (!$favori) {
+        if (!$favori || $favori->getUtilisateur() !== $this->getUser()) {
             return new JsonResponse(['error' => 'Favori not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -84,9 +82,9 @@ final class FavoriController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_favori_edit', methods: ['PUT', 'PATCH'])]
-    public function edit(Request $request, ?Favori $favori, EntityManagerInterface $entityManager, UserRepository $userRepository, MangaRepository $mangaRepository): JsonResponse
+    public function edit(Request $request, ?Favori $favori, EntityManagerInterface $entityManager, MangaRepository $mangaRepository): JsonResponse
     {
-        if (!$favori) {
+        if (!$favori || $favori->getUtilisateur() !== $this->getUser()) {
             return new JsonResponse(['error' => 'Favori not found'], Response::HTTP_NOT_FOUND);
         }
 
@@ -95,13 +93,6 @@ final class FavoriController extends AbstractController
             return new JsonResponse(['error' => 'Invalid JSON'], Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($data['utilisateur'])) {
-            $user = $userRepository->find($data['utilisateur']);
-            if (!$user) {
-                return new JsonResponse(['error' => 'Utilisateur introuvable'], Response::HTTP_BAD_REQUEST);
-            }
-            $favori->setUtilisateur($user);
-        }
 
         if (isset($data['manga'])) {
             $manga = $mangaRepository->find($data['manga']);
@@ -119,7 +110,7 @@ final class FavoriController extends AbstractController
     #[Route('/{id}', name: 'app_favori_delete', methods: ['DELETE'])]
     public function delete(?Favori $favori, EntityManagerInterface $entityManager): JsonResponse
     {
-        if (!$favori) {
+        if (!$favori || $favori->getUtilisateur() !== $this->getUser()) {
             return new JsonResponse(['error' => 'Favori not found'], Response::HTTP_NOT_FOUND);
         }
 
