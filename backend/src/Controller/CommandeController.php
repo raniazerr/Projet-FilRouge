@@ -120,6 +120,10 @@ class CommandeController extends AbstractController
             return new JsonResponse(['error' => 'Accès refusé'], Response::HTTP_FORBIDDEN);
         }
 
+        if ($commande->getStatut() !== 'en attente') {
+            return new JsonResponse(['error' => 'Seul le panier peut être modifié'], Response::HTTP_CONFLICT);
+        }
+
         $em->remove($reservation);
         $em->flush();
 
@@ -134,6 +138,10 @@ class CommandeController extends AbstractController
             return new JsonResponse(['error' => 'Accès refusé'], Response::HTTP_FORBIDDEN);
         }
 
+        if (!in_array($commande->getStatut(), ['en attente', 'soumise'], true)) {
+            return new JsonResponse(['error' => 'Une commande confirmée ou expirée ne peut pas être supprimée'], Response::HTTP_CONFLICT);
+        }
+
         $em->remove($commande);
         $em->flush();
 
@@ -146,6 +154,14 @@ class CommandeController extends AbstractController
     {
         if ($commande->getUtilisateur() !== $this->getUser()) {
             return new JsonResponse(['error' => 'Accès refusé'], Response::HTTP_FORBIDDEN);
+        }
+
+        if ($commande->getStatut() !== 'en attente') {
+            return new JsonResponse(['error' => 'Cette commande n\'est plus un panier'], Response::HTTP_CONFLICT);
+        }
+
+        if ($commande->getReservations()->isEmpty()) {
+            return new JsonResponse(['error' => 'Le panier est vide'], Response::HTTP_BAD_REQUEST);
         }
 
         $commande->setStatut('soumise');
@@ -181,6 +197,10 @@ class CommandeController extends AbstractController
 
         if (!in_array($statut, ['confirmée', 'expirée'])) {
             return new JsonResponse(['error' => 'Statut invalide'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($commande->getStatut() !== 'soumise') {
+            return new JsonResponse(['error' => 'Seule une commande soumise peut être confirmée ou expirée'], Response::HTTP_CONFLICT);
         }
 
         // Si confirmée, on décrémente le stock de chaque tome

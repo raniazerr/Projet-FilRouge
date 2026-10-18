@@ -44,6 +44,7 @@ class MangaApiServiceTest extends TestCase
                         'q' => 'naruto',
                         'limit' => 10,
                     ],
+                     'timeout' => 5
                 ]
             )
             ->willReturn($response);

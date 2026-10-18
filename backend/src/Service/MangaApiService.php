@@ -24,7 +24,8 @@ class MangaApiService
     {
         $response = $this->client->request(
             'GET',
-            "https://api.tenrai.org/v1/manga/{$id}"
+            "https://api.tenrai.org/v1/manga/{$id}",
+            ['timeout' => 5]
         );
 
         return $response->toArray();
@@ -41,6 +42,7 @@ class MangaApiService
                     'q' => $query,
                     'limit' => 10,
                 ],
+                'timeout' => 5,
             ]
         );
 
