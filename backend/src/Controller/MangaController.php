@@ -43,7 +43,11 @@ public function search(Request $request, MangaApiService $api): JsonResponse
         return new JsonResponse(['error' => 'Requête trop courte (2 caractères min)'], Response::HTTP_BAD_REQUEST);
     }
 
-    $data = $api->searchManga($query);
+            try {
+            $data = $api->searchManga($query);
+        } catch (\Throwable) {
+            return new JsonResponse(['error' => 'API externe indisponible'], Response::HTTP_BAD_GATEWAY);
+        }
 
     $resultats = array_map(function ($m) {
         return [
@@ -70,7 +74,14 @@ public function search(Request $request, MangaApiService $api): JsonResponse
         return new JsonResponse(['error' => 'api_id required'], 400);
     }
 
-    $apiData = $api->getManga((int)$data['api_id'])['data'];
+            try {
+            $apiData = $api->getManga((int)$data['api_id'])['data'] ?? null;
+        } catch (\Throwable) {
+            $apiData = null;
+        }
+        if (!$apiData) {
+            return new JsonResponse(['error' => 'API externe indisponible'], Response::HTTP_BAD_GATEWAY);
+        }
 
     $manga = new Manga();
     $manga->setApiId($apiData['mal_id']);
@@ -96,8 +107,13 @@ public function search(Request $request, MangaApiService $api): JsonResponse
             return new JsonResponse(['error' => 'Manga not found'], 404);
         }
 
+    // Si Tenrai est lent ou en panne, on affiche quand même la fiche avec les données locales
+            try {
+                $apiData = $api->getManga($manga->getApiId());
+            } catch (\Throwable) {
+                $apiData = ['data' => []];
+            }
 
-    $apiData = $api->getManga($manga->getApiId());
     // tri des tomes par numéro de tome
     $tomesArray = $manga->getTomes()->toArray();
 usort($tomesArray, fn($a, $b) => $a->getNumeroTome() <=> $b->getNumeroTome());
