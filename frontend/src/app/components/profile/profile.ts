@@ -6,6 +6,7 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/AuthService';
 import { ServManga, Manga } from '../../services/MangaService';
 import { FavoriService } from '../../services/FavoriService';
+import { PanierService } from '../../services/PanierService';
 
 @Component({
   selector: 'app-profile',
@@ -41,7 +42,8 @@ export class ProfileComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     public authService: AuthService,
     private router: Router,
-    private favoriService: FavoriService
+    private favoriService: FavoriService,
+    private panierService: PanierService
   ) {}
 
   ngOnInit(): void {
@@ -89,6 +91,17 @@ chargerReservations(): void {
     }
   });
 }
+
+  annuler(id: number): void {
+    this.panierService.annulerCommande(id).subscribe({
+      next: () => {
+        this.reservations = this.reservations.filter(
+        commande => commande.id !== id
+        );
+        this.cdr.detectChanges();
+      }
+    });
+  }
 
 chargerFavoris(): void {
   this.favoriService.getMesFavoris().subscribe({
