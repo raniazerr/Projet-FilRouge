@@ -345,7 +345,7 @@
   to { transform: rotate(360deg); }
 }
 
-// ---- Réservations (même DA que le panier) ----
+// ---- Réservations ----
 .profile__reservations {
   display: flex;
   flex-direction: column;
@@ -432,7 +432,7 @@
 
   &__footer {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     border-top: 1px solid #eee;
     padding-top: 12px;
   }
@@ -442,6 +442,7 @@
     font-size: 18px;
     font-weight: 700;
     color: #e63312;
+    margin-left: auto;
   }
 }
 
@@ -449,5 +450,22 @@
   .profile__header-card {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+  .btn-supprimer {
+  background: white;
+  border: 2px solid #e63312;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #e63312;
+  cursor: pointer;
+  padding: 6px 14px;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e63312;
+    color: white;
   }
 }

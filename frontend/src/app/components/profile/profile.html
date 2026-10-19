@@ -136,6 +136,9 @@
         </ul>
 
         <div class="reservation-card__footer">
+          <button *ngIf="commande.statut === 'soumise'" class="btn-supprimer" (click)="annuler(commande.id)">
+          Annuler la commande
+        </button>
           <span class="reservation-card__total">{{ commande.total }} €</span>
         </div>
       </div>
